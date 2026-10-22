@@ -1,0 +1,166 @@
+# =========================
+# OS
+# =========================
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# =========================
+# Editors / IDEs
+# =========================
+.vscode/
+.idea/
+*.iml
+*.ipr
+*.iws
+*.swp
+*.swo
+*~
+*.sublime-project
+*.sublime-workspace
+.project
+.classpath
+.settings/
+.factorypath
+.nb-gradle/
+*.code-workspace
+
+# =========================
+# Node / Vue / Frontend
+# =========================
+node_modules/
+dist/
+dist-ssr/
+.output/
+.nuxt/
+.vite/
+.cache/
+.parcel-cache/
+.turbo/
+.eslintcache
+.stylelintcache
+*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.pnpm-store/
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+coverage/
+.nyc_output/
+
+# =========================
+# Java / Spring / Gradle / Maven
+# =========================
+target/
+build/
+out/
+bin/
+.gradle/
+.mvn/wrapper/maven-wrapper.jar
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+hs_err_pid*
+replay_pid*
+spring.log
+*.orig
+
+# =========================
+# Python / FastAPI
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+env.bak/
+venv.bak/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.egg-info/
+.eggs/
+pip-log.txt
+pip-delete-this-directory.txt
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# =========================
+# RAG / ML artifacts
+# =========================
+*.bin
+*.pt
+*.pth
+*.onnx
+*.safetensors
+chroma/
+.chroma/
+faiss_index/
+*.faiss
+*.pkl
+*.pickle
+.cache/huggingface/
+models/
+embeddings/
+vectorstore/
+vectordb/
+
+# =========================
+# Env / secrets
+# =========================
+.env
+.env.*
+!.env.example
+!.env.sample
+*.pem
+*.key
+credentials.json
+secrets.json
+
+# =========================
+# Logs / temp
+# =========================
+logs/
+*.log
+tmp/
+temp/
+*.tmp
+*.temp
+*.bak
+
+# =========================
+# Docker / local runtime
+# =========================
+docker-compose.override.yml
+
+# =========================
+# Misc
+# =========================
+*.orig
+*.rej
+.history/
+.claude/
+.cursor/
+.github-copilot/
