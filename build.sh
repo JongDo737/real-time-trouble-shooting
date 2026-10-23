@@ -34,5 +34,12 @@ else
   python "$RAG_DIR/build_faiss.py"
 fi
 
-echo "[5/5] docker compose 실행"
+echo "[5/6] backend gradle 빌드"
+cd "$ROOT_DIR/backend"
+chmod +x ./gradlew
+./gradlew build
+cd "$ROOT_DIR"
+
+
+echo "[6/6] docker compose 실행"
 # docker compose 명령은 여기에 넣으면 됩니다.

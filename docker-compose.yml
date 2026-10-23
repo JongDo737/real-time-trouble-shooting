@@ -14,21 +14,20 @@ services:
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
-      - frontend
+      # - frontend
       - backend
-      - fastapi
-      - rag
+      # - fastapi
     restart: unless-stopped
 
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    environment:
-      TZ: UTC
-    expose:
-      - "80"
-    restart: unless-stopped
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   environment:
+  #     TZ: UTC
+  #   expose:
+  #     - "80"
+  #   restart: unless-stopped
 
   backend:
     build:
@@ -42,10 +41,14 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+
     expose:
       - "8080"
     depends_on:
       - mariadb
+    ports:
+      - "8080:8080"
     restart: unless-stopped
 
   fastapi:
@@ -56,20 +59,10 @@ services:
       TZ: UTC
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       JWT_SECRET: ${JWT_SECRET}
-      RAG_BASE_URL: ${RAG_BASE_URL}
     expose:
       - "8001"
-    restart: unless-stopped
-
-  rag:
-    build:
-      context: ./rag
-      dockerfile: Dockerfile
-    environment:
-      TZ: UTC
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-    expose:
-      - "8000"
+    ports:
+      - "8001:8001"
     restart: unless-stopped
 
   mariadb:
