@@ -73,6 +73,7 @@ bin/
 .mvn/wrapper/maven-wrapper.jar
 *.class
 *.jar
+!backend/gradle/wrapper/gradle-wrapper.jar
 *.war
 *.ear
 *.nar

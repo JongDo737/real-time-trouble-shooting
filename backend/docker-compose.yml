@@ -1,4 +1,4 @@
-# 로컬 백엔드 개발용: nginx + mariadb만 기동 (Spring은 IDE · ./gradlew bootRun으로 호스트에서 실행)
+# 로컬 백엔드 개발용: nginx + mariadb만 기동
 # docker compose --env-file ../.env up -d --build
 # nginx는 http://localhost/backend/api/ , ws://localhost/backend/ws 를 호스트 8080으로 넘긴다
 
@@ -14,9 +14,6 @@ services:
       TZ: UTC
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
-
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
     depends_on:
       - mariadb
     restart: unless-stopped
