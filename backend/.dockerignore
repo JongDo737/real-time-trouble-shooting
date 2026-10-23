@@ -1,0 +1,7 @@
+build/
+.gradle/
+.idea/
+*.md
+scripts/
+docker-compose.yml
+nginx.conf
