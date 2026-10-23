@@ -164,5 +164,3 @@ docker-compose.override.yml
 .claude/
 .cursor/
 .github-copilot/
-
-
