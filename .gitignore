@@ -164,3 +164,9 @@ docker-compose.override.yml
 .claude/
 .cursor/
 .github-copilot/
+
+# backend 개인 작업 문서 (저장소에 올리지 않음)
+backend/*.md
+backend/CLAUDE.md
+# backend 서버 설정은 배포 담당이 직접 넣음 (저장소에 올리지 않음)
+backend/src/main/resources/application.properties
