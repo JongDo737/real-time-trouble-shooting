@@ -14,13 +14,12 @@ services:
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
-      # - frontend
+      - frontend
       - backend
       - voice
       # - fastapi
     restart: unless-stopped
 
-<<<<<<< Updated upstream
   # frontend:
   #   build:
   #     context: ./frontend
@@ -30,7 +29,6 @@ services:
   #   expose:
   #     - "80"
   #   restart: unless-stopped
-=======
   frontend:
     build:
       context: ./frontend
@@ -45,7 +43,6 @@ services:
     expose:
       - "80"
     restart: unless-stopped
->>>>>>> Stashed changes
 
   backend:
     build:
@@ -64,7 +61,8 @@ services:
     expose:
       - "8080"
     depends_on:
-      - mariadb
+      mariadb:
+        condition: service_healthy
     ports:
       - "8080:8080"
     restart: unless-stopped
@@ -108,9 +106,17 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     expose:
       - "3306"
+    ports:
+      - "3306:3306"
     volumes:
       - mariadb_data:/var/lib/mysql
     command: --default-time-zone=+00:00
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--su-mysql", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 40s
     restart: unless-stopped
 
 volumes:
