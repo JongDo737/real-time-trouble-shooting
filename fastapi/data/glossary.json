@@ -1,0 +1,37 @@
+{
+  "description": "번역 용어집. 번역할 문장에 아래 용어가 나오면, 목표 언어의 첫 번째 용어를 쓰도록 모델에 알려 준다. 파일을 저장하면 서버를 재시작하지 않아도 다음 요청부터 반영된다.",
+  "how_to_edit": [
+    "entries 안에 항목을 추가한다. 각 항목의 terms에는 언어 코드(ko, en, ja ...)별로 용어를 적는다.",
+    "같은 언어에 여러 표기를 적을 수 있다. 그 언어에서 어느 하나라도 문장에 있으면 매칭되고, 목표 언어로는 '첫 번째' 용어가 쓰인다.",
+    "영어 용어는 단어 시작이 맞으면 매칭된다 (flow는 flows, flowing에도). 한국어 용어는 조사가 붙어도 매칭된다 (유량이, 유량을).",
+    "장비명 · 모델명 · 오류코드는 넣지 않는다. 그것들은 번역하지 않고 영어 원문 그대로 둔다.",
+    "source는 근거 메모(선택)이다. 현장 담당자 검수 후 틀린 항목은 고치거나 지운다."
+  ],
+  "status": "초안: 매뉴얼에 '한국어(영어)'로 병기된 표기에서만 뽑았다. 현장 담당자 검수 필요.",
+  "entries": [
+    {"id": "flow-rate", "terms": {"en": ["flow rate", "flow"], "ko": ["유량"]}, "source": "error_manual SPEC-03 'Excessive Flow Rate - 유량 표시 범위 초과'"},
+    {"id": "hunting", "terms": {"en": ["hunting"], "ko": ["헌팅"]}, "source": "troubleshoot_log CASE-03 '헌팅(Hunting/Oscillation)'"},
+    {"id": "oscillation", "terms": {"en": ["oscillation", "oscillating", "oscillate"], "ko": ["출렁거림", "출렁거리"]}, "source": "troubleshoot_log CASE-03 '출렁거림(헌팅)(Hunting/Oscillation)'"},
+    {"id": "reflected-power", "terms": {"en": ["reflected power", "reflected"], "ko": ["반사파"]}, "source": "error_manual SPEC-01 '반사파(Reflected Power)'"},
+    {"id": "forward-power", "terms": {"en": ["forward power"], "ko": ["순방향 전력", "순방향"]}, "source": "error_manual SPEC-01 '순방향(Forward Power)'"},
+    {"id": "variable-capacitor", "terms": {"en": ["variable capacitor"], "ko": ["가변 커패시터"]}, "source": "error_manual SPEC-01 '가변 커패시터(Variable Capacitor)'"},
+    {"id": "arcing", "terms": {"en": ["arcing"], "ko": ["아킹"]}, "source": "error_manual SPEC-01 '아킹(Arcing)'"},
+    {"id": "return-loss", "terms": {"en": ["return loss"], "ko": ["반사 손실"]}, "source": "error_manual SPEC-01 '반사 손실(Return Loss)'"},
+    {"id": "auto-matcher", "terms": {"en": ["auto matcher"], "ko": ["오토 매처"]}, "source": "troubleshoot_log CASE-01 'Auto Matcher'"},
+    {"id": "quartz-window", "terms": {"en": ["quartz dielectric window", "quartz window"], "ko": ["석영 유전체 윈도우"]}, "source": "error_manual SPEC-02 '석영 유전체 윈도우(Quartz Dielectric Window)'"},
+    {"id": "inlet-pressure", "terms": {"en": ["inlet pressure"], "ko": ["인렛 압력"]}, "source": "troubleshoot_log CASE-03 'Adjust inlet pressure'"},
+    {"id": "zero-adjustment", "terms": {"en": ["zero adjustment", "zero adjust"], "ko": ["영점 보정"]}, "source": "error_manual SPEC-03 '영점 보정(Zero Adjustment)'"},
+    {"id": "interlock-defeat", "terms": {"en": ["interlock defeat", "interlock bypass"], "ko": ["인터록 우회"]}, "source": "troubleshoot_log CASE-04 '인터록 우회(Defeat)'"},
+    {"id": "manual-reset", "terms": {"en": ["manual reset"], "ko": ["수동 리셋"]}, "source": "error_manual SPEC-04 '수동 리셋(Manual Resetting)'"},
+    {"id": "isolation-mode", "terms": {"en": ["isolation mode"], "ko": ["격리 모드"]}, "source": "troubleshoot_log CASE-08 '격리 모드(Isolation Mode)'"},
+    {"id": "homing", "terms": {"en": ["encoder homing", "homing"], "ko": ["엔코더 호밍", "호밍"]}, "source": "troubleshoot_log CASE-06 '엔코더 호밍(Homing Procedure)'"},
+    {"id": "incremental-encoder", "terms": {"en": ["incremental encoder"], "ko": ["증분형 엔코더"]}, "source": "error_manual SPEC-06 '증분형 위치 엔코더(Incremental Encoders)'"},
+    {"id": "helium-leak-rate", "terms": {"en": ["helium leak-up rate", "helium leak rate"], "ko": ["헬륨 리크율"]}, "source": "troubleshoot_log CASE-05 '헬륨 리크율(Helium leak-up rate)'"},
+    {"id": "pitting", "terms": {"en": ["pitting"], "ko": ["피팅"]}, "source": "troubleshoot_log CASE-05 '피팅(Pitting)'"},
+    {"id": "thickness-loss", "terms": {"en": ["thickness loss"], "ko": ["두께 손실"]}, "source": "error_manual SPEC-05 '두께 손실(Thickness Loss)'"},
+    {"id": "shielded-cable", "terms": {"en": ["shielded cable"], "ko": ["차폐 케이블"]}, "source": "error_manual SPEC-10 '차폐 케이블(Shielded Cables Only)'"},
+    {"id": "silver-plated", "terms": {"en": ["silver-plated"], "ko": ["은도금"]}, "source": "error_manual SPEC-01 '은도금(Silver-plated)'"},
+    {"id": "service-mode", "terms": {"en": ["service mode"], "ko": ["서비스 모드"]}, "source": "error_manual SPEC-07 '서비스 모드(Service Mode)'"},
+    {"id": "truck-rolls", "terms": {"en": ["truck rolls"], "ko": ["재출동"]}, "source": "error_manual SPEC-09 '재출동(Truck Rolls)'"}
+  ]
+}

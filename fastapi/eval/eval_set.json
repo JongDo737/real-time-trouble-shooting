@@ -1,0 +1,147 @@
+[
+  {
+    "id": "E01", "category": "정확히 일치",
+    "equipment_name": "AE Cesar 1312", "error_code": "ALARM-402",
+    "symptom": "RF 반사파가 12%까지 튀고 오토 매처가 흔들립니다",
+    "expect": {"status": "found", "exact_match": true, "must_contain": ["커패시터", "4.5 Nm"], "section": "CASE-01"}
+  },
+  {
+    "id": "E02", "category": "표기 변형",
+    "equipment_name": "Seren MC2", "error_code": "alarm 402",
+    "symptom": "반사파가 간헐적으로 튑니다",
+    "expect": {"status": "found", "exact_match": true, "must_contain": ["커패시터|아킹"], "section": "01"}
+  },
+  {
+    "id": "E03", "category": "정확히 일치",
+    "equipment_name": "ICP-RIE", "error_code": "NO-ALARM-IGNITION-FAIL",
+    "symptom": "알람은 없는데 플라즈마가 안 켜집니다",
+    "expect": {"status": "found", "exact_match": true, "must_contain": ["석영", "150 mTorr"], "section": "CASE-02"}
+  },
+  {
+    "id": "E04", "category": "정확히 일치",
+    "equipment_name": "Brooks GF40", "error_code": "AL40",
+    "symptom": "유량이 출렁거립니다",
+    "expect": {"status": "found", "exact_match": true, "must_contain": ["2 psig", "Zero"], "section": "CASE-03"}
+  },
+  {
+    "id": "E05", "category": "symptom 없음",
+    "equipment_name": "Brooks GF40", "error_code": "AL40", "symptom": null,
+    "expect": {"status": "found", "exact_match": true, "must_contain": ["2 psig"], "section": "CASE-03"}
+  },
+  {
+    "id": "E06", "category": "표기 변형",
+    "equipment_name": "brooks gf40", "error_code": "al-40",
+    "symptom": "가스 유량이 계속 왔다갔다 해요",
+    "expect": {"status": "found", "exact_match": true, "must_contain": ["2 psig"], "section": "CASE-03"}
+  },
+  {
+    "id": "E07", "category": "정확히 일치",
+    "equipment_name": "Fab 식각 장비", "error_code": "EMO",
+    "symptom": "EMO 버튼을 눌렀다 풀었는데 전원이 다시 안 켜집니다",
+    "expect": {"status": "found", "must_contain": ["수동 리셋|Manual Reset"], "section": "CASE-04"}
+  },
+  {
+    "id": "E08", "category": "정확히 일치",
+    "equipment_name": "ICP High Density Etch System", "error_code": "HE-LEAK-HIGH",
+    "symptom": "헬륨 리크율 알람이 뜨고 DC 셀프 바이어스가 튑니다",
+    "expect": {"status": "found", "must_contain": ["실리콘 전극"], "section": "CASE-05"}
+  },
+  {
+    "id": "E09", "category": "영어 symptom",
+    "equipment_name": "SCARA Robot", "error_code": "ERR-WHR-OUT-OF-POCKET",
+    "symptom": "The robot stopped with an Out of Pocket alarm while taking a wafer out of the chamber",
+    "expect": {"status": "found", "exact_match": true, "must_contain": ["호밍|Homing", "티칭"], "section": "CASE-06"}
+  },
+  {
+    "id": "E10", "category": "정확히 일치",
+    "equipment_name": "Slit Valve", "error_code": "LEAK-CHECK-FAIL",
+    "symptom": "리크 체크에서 베이스 압력 상승률이 기준을 넘습니다",
+    "expect": {"status": "found", "must_contain": ["0190-09539"], "section": "CASE-07"}
+  },
+  {
+    "id": "E11", "category": "정확히 일치",
+    "equipment_name": "Xtralis VESDA", "error_code": "NO-ALARM",
+    "symptom": "배기 덕트 정비 중 연기 감지기 오알람이 걱정됩니다",
+    "expect": {"status": "found", "must_contain": ["격리|Isolation", "15분"], "section": "08"}
+  },
+  {
+    "id": "E12", "category": "정확히 일치",
+    "equipment_name": "Metal Etch Chamber #2", "error_code": "SMARTFDC-EARLY-WARNING",
+    "symptom": "SmartFDC에서 드리프트 조기 경보가 떴습니다",
+    "expect": {"status": "found", "must_contain": ["워크오더|작업 지시|PM"], "section": "CASE-09"}
+  },
+  {
+    "id": "E13", "category": "정확히 일치",
+    "equipment_name": "AccuThermo AW610", "error_code": "ERR-PWR-SUPPLY-BOARD",
+    "symptom": "램프 파워가 불안정하고 온도 컨트롤러 통신이 끊깁니다",
+    "expect": {"status": "found", "exact_match": true, "must_contain": ["차폐"], "section": "10"}
+  },
+  {
+    "id": "E14", "category": "규격 질문",
+    "equipment_name": "AE Cesar 1312", "error_code": "ALARM-402",
+    "symptom": "반사파 정상 기준과 경고 기준이 얼마인가요?",
+    "expect": {"status": "found", "must_contain": ["5%", "10%"], "section": "SPEC-01"}
+  },
+  {
+    "id": "E15", "category": "영어 symptom",
+    "equipment_name": "Brooks GF40", "error_code": "AL40",
+    "symptom": "The flow keeps oscillating around the setpoint",
+    "expect": {"status": "found", "exact_match": true, "must_contain": ["2 psig"], "section": "CASE-03"}
+  },
+  {
+    "id": "E16", "category": "영어 symptom",
+    "equipment_name": "ICP-RIE", "error_code": "NO-ALARM-IGNITION-FAIL",
+    "symptom": "Plasma will not ignite and there is no alarm",
+    "expect": {"status": "found", "exact_match": true, "must_contain": ["석영"], "section": "CASE-02"}
+  },
+  {
+    "id": "E17", "category": "짧은 symptom",
+    "equipment_name": "ICP-RIE", "error_code": "NO-ALARM-IGNITION-FAIL", "symptom": "안 켜짐",
+    "expect": {"status": "found", "must_contain": ["석영"], "section": "CASE-02"}
+  },
+  {
+    "id": "E18", "category": "코드 틀림 (관련 사례)",
+    "equipment_name": "Brooks GF40", "error_code": "AL99",
+    "symptom": "유량이 출렁거립니다",
+    "expect": {"status": "found", "exact_match": false, "needs_review": true, "must_contain": ["AL40"], "section": "CASE-03"}
+  },
+  {
+    "id": "E19", "category": "코드 틀림 (관련 사례)",
+    "equipment_name": "AE Cesar 1312", "error_code": "ALARM-999",
+    "symptom": "반사파가 12%까지 튑니다",
+    "expect": {"status": "found", "exact_match": false, "needs_review": true, "must_contain": ["402"], "section": "01"}
+  },
+  {
+    "id": "E20", "category": "없는 장비",
+    "equipment_name": "CNC-500", "error_code": "E-1042",
+    "symptom": "스핀들에서 소음이 납니다",
+    "expect": {"status": "not_found"}
+  },
+  {
+    "id": "E21", "category": "없는 장비",
+    "equipment_name": "Haas VF-2", "error_code": "SPINDLE-OVERLOAD",
+    "symptom": "주축 과부하 알람이 반복됩니다",
+    "expect": {"status": "not_found"}
+  },
+  {
+    "id": "E22", "category": "없는 주제",
+    "equipment_name": "Brooks GF40", "error_code": "AL40",
+    "symptom": "사내 식당 메뉴가 뭐예요?",
+    "expect": {"status": "not_found"}
+  },
+  {
+    "id": "P01", "category": "탐색 (채점 안 함)", "scored": false,
+    "equipment_name": "Brooks GF40", "error_code": "AL82",
+    "symptom": "Sensor Error 2가 납니다"
+  },
+  {
+    "id": "P02", "category": "탐색 (채점 안 함)", "scored": false,
+    "equipment_name": "Haas VF-2", "error_code": "AL40",
+    "symptom": "유량이 출렁거립니다"
+  },
+  {
+    "id": "P03", "category": "탐색 (채점 안 함)", "scored": false,
+    "equipment_name": "Brooks GF40", "error_code": "AL40",
+    "symptom": "화면이 깨져서 보여요"
+  }
+]
