@@ -20,8 +20,13 @@ npm start
 | `HOST` | 프론트 서버 바인딩 주소, 기본 0.0.0.0 |
 | `API_BASE_URL` | REST 기본 주소. 예: `http://realshoot/backend/api/` |
 | `WS_BASE_URL` | STOMP 접속 주소 전체. 예: `ws://realshoot/backend/ws/` |
+| `STT_URL` | 음성 변환 주소. 기본 Nginx 경로 `/voice/stt/` |
 | `ENABLE_UI_PREVIEW` | `/preview.html` 개발 미리보기 허용, 기본 false |
 | `MOCK_ROLE` | 미리보기의 최초 역할. 실제 역할은 로그인 응답으로 결정 |
+
+Docker와 `.env.example`은 Nginx 진입점을 기준으로 `API_BASE_URL=/backend/api/`, `WS_BASE_URL=/backend/ws/`를 사용합니다. 브라우저 접속 주소를 기준으로 API 주소를 만들며, WebSocket 상대 경로는 HTTP에서 `ws:`, HTTPS에서 `wss:`로 변환합니다. WebSocket 주소의 끝 슬래시는 Nginx의 `location /backend/ws/`와 맞춰 리다이렉트 없이 연결합니다. 프론트 서버에 직접 접속하는 경우에는 브라우저에서 접근 가능한 백엔드 절대 주소를 설정하세요.
+
+Nginx는 로그인 요청 `/backend/api/auth/login`을 백엔드 `/api/auth/login`으로, 회원가입 요청 `/backend/api/auth/signup`을 `/api/auth/signup`으로 전달합니다. WebSocket 연결 `/backend/ws/`는 백엔드 `/ws/`로 전달합니다.
 
 실제 주소는 소스에 직접 적지 않습니다. 공개 설정만 `/runtime-config.js`로 전달합니다. JWT 비밀키·비밀번호를 환경변수 공개 설정에 넣지 마세요. Docker 내부 서비스명이 아닌 브라우저가 접속할 수 있는 주소가 필요합니다.
 
@@ -34,9 +39,10 @@ npm start
 - 실제 `user.role`: ADMIN은 한국어 상담원 화면, USER는 영어 고객 화면
 - 비밀번호는 저장하지 않음. 401·만료 시 세션 삭제
 - 로그아웃은 서버 실패 여부와 관계없이 세션·소켓·타이머 정리
-- 이름·사진 목데이터는 유지하되, 실제 `client_name`이 응답에 있으면 실제 이름을 우선 표시
-- 회원가입은 고객사 전용이며 `client_name`, `company_name`, `position`, `username`, `password` 전송
-- 사용자 확인에 따라 `companyCode`는 제거
+- 로그인 프로필은 `user.username`, `user.companyName`으로 표시. 선택적 `clientName`, `position`이 있으면 사용하며, 실제 로그인 사용자에게 샘플 이름을 표시하지 않음
+- 회원가입은 고객사 전용이며 폼·검증·API 전송에서 `clientName`, `companyName`, `position`, `username`, `password` 사용
+- 이름·회사명·직책·아이디는 앞뒤 공백을 제거한 뒤 검증·전송하며, 내부 공백과 비밀번호는 유지
+- 첨부 `front-api (2).md`의 A-1은 `companyCode` 방식이지만, 사용자가 현재 백엔드 DTO의 이름·회사명·직책 방식을 명시적으로 선택했으므로 회원가입에 한해 이 규격을 적용. `companyCode`와 snake_case 필드는 보내지 않음
 - 이름 20자, 회사명 50자, 직책 30자 이내로 검증. 아이디·비밀번호는 API 명세 기준 검증
 
 ## 통화 흐름
@@ -48,21 +54,20 @@ npm start
 5. 상담원만 종료 아이콘 사용. 해결/미해결 선택 후 RESOLVED/UNRESOLVED 전송
 6. 종료·부재중 이벤트에서 구독 해제, 임시 메모 폐기, 목록 갱신
 
-PENDING은 서버가 오래 기다린 순으로 정렬합니다. 상태 필터에는 CALLING이 없습니다. MISSED는 60초 기준 서버가 변경하며 프론트에서 타이머로 상태를 조작하지 않습니다. 상담원 목록은 5초 간격으로 조회하며 요청이 겹치지 않습니다. 페이지네이션은 서버 응답을 사용합니다.
+PENDING은 서버가 오래 기다린 순으로 정렬합니다. 상태 필터는 명세의 다섯 상태(PENDING/CALLING/MISSED/RESOLVED/UNRESOLVED)를 지원합니다. MISSED는 60초 기준 서버가 변경하며 프론트에서 타이머로 상태를 조작하지 않습니다. 상담원 목록은 5초 간격으로 조회하며 요청이 겹치지 않습니다. 페이지네이션은 서버 응답을 사용합니다.
 
 상태별 건수는 페이지 행 개수가 아닌 상태별 목록 응답의 `totalElements`를 사용합니다. 전체 건수에는 서버의 전체 조회 결과를 사용합니다.
 
-## 숫자 ID와 시각
+## 통화 ID와 시각
 
-- 화면 접수 번호: DB의 자동 증가 숫자 `id`
-- 내부 REST·소켓 식별자: UUID `callId`
-- API가 숫자 `id`를 주지 않으면 `—` 표시. 프론트에서 번호 생성하지 않음
+- 목록·상세·REST·소켓 식별자: 백엔드가 제공하는 UUID `callId`
+- 현재 통화 DTO는 숫자 `id`를 반환하지 않으므로 화면에서도 UUID를 사용
 - 목록의 접수 시간은 `createdAt`으로 `3분 전`처럼 계산. DB에 상대 시간을 저장하지 않음
-- 정확한 시각은 UTC 기준 `time`의 title에서 확인. 상대 시간은 1분마다 갱신
-- 번역 시각도 UTC+0으로 표시하며 브라우저 현지 시간으로 바꾸지 않음
+- 서버의 UTC ISO 값을 유지하고, 화면·툴팁·번역 시각은 브라우저 현지 시간과 시간대로 표시
+- 상대 시간은 UTC 시각 차이로 계산하며 1분마다 갱신
 - 시간대 없는 문자열이나 초/밀리초 단위가 불명확한 숫자는 해석하지 않음
 
-목록 응답의 `customer.username`은 로그인 아이디이고 `customer.client_name`은 실제 문의자 이름입니다. 이름이 없으면 아이디를 이름으로 대신 표시하지 않습니다. 상세 응답에 고객 정보가 없으면 같은 문의의 목록 데이터를 유지합니다.
+목록 응답의 `customer.username`은 계정이며 필수 화면 정보로 사용합니다. 선택적 `customer.clientName`이 있으면 이름을 표시하고, 없으면 문의 계정으로 명시해 표시합니다. 상세 응답에 고객 정보가 없으면 같은 문의의 목록 데이터를 유지합니다.
 
 ## 소켓 라이브러리 준비
 
@@ -86,16 +91,22 @@ npm run vendor:stomp
 - 내 역할의 번역 이벤트는 무시하고 utteranceId 중복 제거
 - 번역 실패·확인 필요 상태를 역할 언어로 표시
 
-## 이미 인식된 음성 텍스트 전달
+## 통화 중 음성 입력
 
-이번 구현에서는 녹음·STT를 새로 수행하지 않습니다. 음성 담당 코드가 최종 인식 문자열을 아래 함수에 전달합니다.
+기본 설정 `STT_URL=/voice/stt/`는 다운로드의 `share/voice-ai_code` 예제를 참고한 **MediaRecorder → multipart audio 업로드 → faster-whisper** 방식을 사용합니다. 고객·상담원이 통화로 연결되면 마이크 권한을 요청하고 자동으로 듣습니다. 약 1초의 발화 후 침묵을 감지해 문장을 끊고 서버에서 텍스트로 변환하여 통화 STOMP로 자동 전송합니다. 긴 발화는 최대 30초마다 분할하며, 음성 재생(TTS)은 포함하지 않습니다.
 
-```js
-import { sendRecognizedText } from './js/app.js';
-const sent = sendRecognizedText(recognizedText);
-```
+- 고객(USER)은 영어 `en`, 상담원(ADMIN)은 한국어 `ko`. 서버도 JWT 역할과 언어가 일치하는지 검증합니다.
+- Nginx `/voice/stt/` → 독립 `voice:8008/stt/`. 기존 백엔드·RAG 코드와 배포는 유지합니다. JWT는 기존 Bearer 토큰을 사용하며 참고 코드의 쿠키·고정 키·issuer 방식은 사용하지 않습니다.
+- 음성은 `audio` 파일 필드, 언어는 `language` 필드로 업로드합니다. ffmpeg로 mono 16kHz WAV로 변환하고 CPU int8 faster-whisper tiny 모델로 처리합니다. 모델은 첫 사용 시 내려받아 `whisper_models` 볼륨에 캐시합니다.
+- 업로드는 최대 5MiB, 변환된 문장은 최대 2,000자입니다. 임시 음성 파일은 요청 처리 후 삭제하며 음성·인식 텍스트·토큰은 로그에 남기지 않습니다.
+- HTTPS 또는 localhost에서 사용합니다. 권한 거부·마이크 없음·서비스 인증/변환 실패는 화면에 안내합니다. 직접 텍스트를 입력·전송하는 기능은 제공하지 않습니다.
+- 변환 중에도 다음 문장 녹음을 이어가고, 녹음 파일은 순서대로 전송합니다. 대기 문장은 최대 3개로 제한하며 지연이 심하면 마이크를 중지하고 안내합니다. 음소거 버튼으로 중지하고 마이크 재개 버튼으로 다시 사용할 수 있습니다.
+- 통화 종료·로그아웃·소켓 끊김·다른 탭 전환·페이지 이탈 시 마이크와 HTTP 요청을 중지하며, 늦은 결과는 전송하지 않습니다. 재연결·탭 복귀 시 연결된 통화면 자동 재개하되 사용자의 음소거 선택은 유지합니다. 권한 거부/변환 오류 후에는 반복 요청하지 않고 수동 재개를 기다립니다.
+- `STT_URL`을 비우면 브라우저 SpeechRecognition을 사용합니다. 이 대체 방식은 확정 문장만 전송하고 브라우저 외부 음성 인식 서비스가 사용될 수 있습니다.
 
-성공 시 true를 반환하고 내 말을 즉시 표시합니다. 미연결·빈 텍스트·2000자 초과·전송 실패는 false입니다. 별도의 음성 이벤트명이나 파이프라인 주소를 만들지 않았습니다.
+실행: `docker compose up -d --build voice frontend` 후 `docker compose exec nginx nginx -s reload`. 새 환경에서 전체 실행할 때는 `docker compose up -d --build`를 사용합니다.
+
+사용 순서: 고객 문의 접수 → 상담원 수락 → 최초 마이크 권한 허용 → 자동 녹음 시작 → 고객 영어 / 상담원 한국어 발화 → 잠깐 멈춤 → 내 원문·상대 번역문 확인.
 
 ## 해결방법
 
@@ -109,7 +120,7 @@ const sent = sendRecognizedText(recognizedText);
 
 | 파일 | 역할 |
 |---|---|
-| `app.js` | DOM 이벤트·모달·미리보기·인식 텍스트 진입점 |
+| `app.js` | DOM 이벤트·모달·미리보기·텍스트 전송 |
 | `support-controller.js` | 로그인·통화·조회·폴링·소켓 생명주기 |
 | `views.js` | 화면 HTML |
 | `api-client.js`, `support-api.js` | HTTP 요청과 확정된 REST 경로 |
@@ -118,7 +129,7 @@ const sent = sendRecognizedText(recognizedText);
 | `call-data.js` | API 응답과 화면 데이터 변환 |
 | `validation.js` | 필드 검증 |
 | `config.js`, `service-urls.js` | 환경변수·주소 조합 |
-| `utc.js` | UTC·상대 시간 표시 |
+| `utc.js` | UTC ISO 처리·현지 시간 표시·상대 시간 계산 |
 | `model.js` | 상태 목록·화면 초기값·목 프로필·HTML 이스케이프 |
 | `dom.js` | HTML 문자열·모달 포커스 |
 
@@ -142,25 +153,30 @@ npm run check
 npm test
 ```
 
-자동 테스트는 가짜 HTTP·STOMP 클라이언트로 계약과 상태 전환을 검증합니다. 실제 서버 로그인·회원가입·음성·소켓·RAG의 종단 간 동작은 실제 서버 주소 설정 후 확인해야 합니다. 설치한 실제 STOMP 브라우저 번들로 인증 헤더·구독·전송·정상 해제를 로컬 가상 연결에서 확인했습니다. DB 스키마의 이중 PRIMARY KEY 선언과 응답의 숫자 id 제공 여부는 백엔드 확인이 필요합니다.
+자동 테스트는 가짜 HTTP·STOMP 클라이언트로 계약과 상태 전환을 검증합니다. 실제 서버 로그인·회원가입·텍스트·소켓·RAG의 종단 간 동작은 실제 서버 주소 설정 후 확인해야 합니다. 설치한 실제 STOMP 브라우저 번들로 인증 헤더·구독·전송·정상 해제를 로컬 가상 연결에서 확인했습니다. 현재 통화 DTO는 UUID `callId`를 제공하며 프론트도 이 값을 표시합니다.
 
 STOMP 클라이언트의 연결·구독·해제 API는 [공식 문서](https://stomp-js.github.io/api-docs/latest/classes/Client.html)를 기준으로 작성했습니다.
 
-## 백엔드 연결 전 확인할 항목
+## 현재 백엔드와의 연결 규격
 
-현재 검증은 코드와 제공 명세의 대조이며 실제 서버 연동 완료를 뜻하지 않습니다.
+첨부 `front-api (2).md` v1.1을 기준으로 프론트를 맞췄습니다. 회원가입만 사용자가 확인한 현재 백엔드 DTO의 `clientName`, `companyName`, `position` 방식을 적용합니다. 실제 배포 서버에서의 종단 간 검증은 별도로 필요합니다.
 
-| 항목 | 프론트 적용 | 백엔드 확인 필요 |
-|---|---|---|
-| 회원가입 | `client_name`, `company_name`, `position`, `username`, `password` | 기존 문서의 `companyCode`를 제거하고 이 다섯 필드로 받는지 |
-| 실제 이름·직책 | 로그인은 `user.client_name/position`, 문의는 `customer.client_name/position` 사용 | 로그인·목록·상세의 실제 응답에 포함되는지 |
-| 접수 번호 | 숫자 `id`, 통신은 UUID `callId` | 목록·상세에 두 값이 모두 포함되는지 |
-| 상세의 고객·이슈 | 목록에서 연 문의는 기존 고객 정보·이슈 유지 | 새로고침 후 복구에도 필요하므로 상세에 `customer`, `symptom`, `messages` 제공 여부 |
-| 시각 | 시간대가 명시된 ISO 문자열, UTC 표시 | DB DATETIME을 UTC로 직렬화하는지 |
-| 입력 오류 | 프론트 필드 검증, 서버 422는 공통 안내 | 특정 입력란에 표시하려면 필드별 오류 응답 형식 합의 필요 |
-| 상태 건수 | 상태별 목록의 `totalElements` 사용 | 별도 집계 API는 명세에 없으므로 새 경로를 만들지 않음 |
+| 항목 | 프론트 적용 |
+|---|---|
+| 회원가입 | `clientName`, `companyName`, `position`, `username`, `password` |
+| 로그인 사용자 | 명세의 `user.id`, `user.username`, `user.role`, `user.companyName`만 있어도 표시. 이름·직책은 선택 정보 |
+| 문의 고객 | `customer.username`, `customer.companyName`으로 표시하며 이름·직책이 없는 명세 응답도 지원 |
+| 통화 ID | UUID `callId`를 표시·전송 |
+| 상세 | 목록에서 고객·증상 정보를 보존하고 상세의 `messages`를 조회자 언어로 표시 |
+| 통화 복구 | 로그인·새로고침 시 진행 중 목록을 조회. 고객은 본인 PENDING/CALLING, 상담원은 `agent.id`가 본인인 CALLING만 복구 |
+| RAG | `PENDING`, `found`, `not_found`, `error` 및 `answer`, `sources`, `needsReview`, `handoff` 처리. 출처만 있는 `found`도 완료로 표시 |
+| STOMP | CONNECT의 Bearer 토큰, `/topic/calls/{callId}` 구독, `/app/calls/{callId}/message`에 `{text}` 전송 |
+| 오류 | 서버 규격 `error.request_id`를 프론트의 `requestId`로 변환. 중복 아이디·식별 가능한 422 필드 오류는 입력란에 표시 |
+| 상태 건수 | 상태별 목록의 `totalElements` 사용 |
 
 REST 요청은 DB 컬럼 이름으로 바꾸지 않습니다. 장비·이슈는 명세의 `equipmentName`, `errorCode`, `symptom`으로 전송합니다. RAG는 백엔드가 처리하며 프론트는 본사용 해결방법 REST API만 조회합니다.
+
+음성 인식 결과만 컨트롤러 내부 전송 함수를 통해 기존 번역 소켓으로 전달합니다.
 
 통화 생성 직후 UUID를 저장하고 구독합니다. 상세 조회가 실패해도 접수한 통화를 유지하며, 재연결 때 상세를 다시 조회합니다. 세션 종료나 페이지 종료 후 늦게 도착한 응답은 무시하고 타이머와 요청을 정리합니다.
 

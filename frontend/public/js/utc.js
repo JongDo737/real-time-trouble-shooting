@@ -26,11 +26,21 @@ export function formatUtcTimestamp(value) {
     return iso ?`${iso.slice(0, 10)} ${iso.slice(11, 19)} UTC`: '—';
 }
 
+export function formatLocalTimestamp(value, timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone) {
+    const date = parseTimestamp(value);
+    if (!date) return '—';
+    const parts = Object.fromEntries(new Intl.DateTimeFormat('en-CA', {
+        timeZone, year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23',
+    }).formatToParts(date).map(({ type, value }) => [type, value]));
+    return `${parts.year}-${parts.month}-${parts.day} ${parts.hour}:${parts.minute}:${parts.second} ${timeZone}`;
+}
+
 export function formatTimeAgo(value, language = 'ko', now = Date.now()) {
     const iso = toUtcIso(value);
     if (!iso) return '—';
     const elapsed = Math.floor((now - new Date(iso).getTime()) / 1000);
-    if (elapsed < 0) return formatUtcTimestamp(value);
+    if (elapsed < 0) return formatLocalTimestamp(value);
     if (elapsed < 60) return language === 'ko' ? '방금 전' : 'Just now';
     const [amount, korean, english] = elapsed < 3600
         ? [Math.floor(elapsed / 60), '분', 'minute']

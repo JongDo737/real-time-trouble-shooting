@@ -1,3 +1,15 @@
+// Docker의 같은 출처 경로와 외부 서버의 절대 주소를 함께 지원합니다.
+export function resolveServiceAddress(address, origin, { socket = false } = {}) {
+    if (!address) return '';
+    const url = new URL(address, origin);
+    const isRelative = !/^[a-z][a-z\d+.-]*:/i.test(address);
+    if (socket && isRelative) {
+        if (url.protocol === 'http:') url.protocol = 'ws:';
+        else if (url.protocol === 'https:') url.protocol = 'wss:';
+    }
+    return url.href;
+}
+
 function joinServiceUrl(baseAddress, relativePath, protocols) {
     if (!baseAddress) throw new Error('서버 기본 주소가 설정되지 않았습니다.');
     const base = new URL(baseAddress);
