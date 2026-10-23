@@ -1,5 +1,6 @@
 # 로컬 백엔드 개발용: nginx + mariadb만 기동
 # docker compose --env-file ../.env up -d --build
+# nginx는 http://localhost/backend/api/ , ws://localhost/backend/ws 를 호스트 8080으로 넘긴다
 
 services:
   nginx:
