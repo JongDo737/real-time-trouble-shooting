@@ -4,6 +4,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "$0")" && pwd)"
 RAG_DIR="$ROOT_DIR/rag_pipeline"
 FAISS_DIR="$RAG_DIR/faiss_db"
+VOICE_DIR="$ROOT_DIR/voice"
 PYTHON_BIN="${PYTHON_BIN:-python3}"
 
 cd "$ROOT_DIR"
@@ -25,6 +26,7 @@ else
   echo "[3/4] 패키지 설치"
   pip install -U pip setuptools wheel
   pip install -r "$RAG_DIR/requirements-e.txt"
+  pip install -r "$VOICE_DIR/requirements.txt"
 
   if [ -f "$ROOT_DIR/.env" ]; then
     export OPENAI_API_KEY="$(grep '^OPENAI_API_KEY=' "$ROOT_DIR/.env" | cut -d= -f2-)"
@@ -40,6 +42,11 @@ chmod +x ./gradlew
 ./gradlew build
 cd "$ROOT_DIR"
 
+echo "[5/6] frontend npm 빌드"
+cd "$ROOT_DIR/frontend"
+npm install
+npm run build
+cd "$ROOT_DIR"
 
 echo "[6/6] docker compose 실행"
 # docker compose 명령은 여기에 넣으면 됩니다.

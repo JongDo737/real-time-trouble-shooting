@@ -20,15 +20,6 @@ services:
       # - fastapi
     restart: unless-stopped
 
-  # frontend:
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile
-  #   environment:
-  #     TZ: UTC
-  #   expose:
-  #     - "80"
-  #   restart: unless-stopped
   frontend:
     build:
       context: ./frontend
