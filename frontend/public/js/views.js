@@ -9,6 +9,15 @@ import { toUtcIso, formatLocalTimestamp, formatTimeAgo } from './utc.js';
 import { html } from './dom.js';
 import { mapMessage } from './call-data.js';
 
+const equipmentCatalog = [
+    { equipment: 'AE Cesar 1312', codes: ['ALARM-402', 'ERR-MATCH-TUNE'] },
+    { equipment: 'ICP-RIE', codes: ['NO-ALARM-IGNITION-FAIL'] },
+    { equipment: 'Brooks GF40', codes: ['AL40', 'AL82'] },
+    { equipment: '300mm ICP Etch ESC', codes: ['HE-LEAK-HIGH'] },
+    { equipment: 'Brooks MagnaTran 7.1', codes: ['ERR-WHR-OUT-OF-POCKET'] },
+    { equipment: 'AccuThermo AW610', codes: ['ERR-PWR-SUPPLY-BOARD', 'TEMP-COMM-FAIL'] },
+];
+
 // 화면을 만들고, 사용자 입력은 app.js에서 처리합니다.
 export function createViews(context) {
     const {
@@ -235,6 +244,16 @@ export function createViews(context) {
         </div>`).join('')}</dl>
         </section>`;
     }
+    function choiceField(label, name, errorField, options, selected) {
+        const invalid = Boolean(errors[errorField]);
+        const choices = options.map((value, index) => {
+            const item = equipmentCatalog.find(entry => entry.equipment === value);
+            const codes = item ? ` data-codes="${item.codes.join(',')}"` : '';
+            return `<label class="choice-toggle"><input type="radio" id="${name}-${index}" name="${name}" value="${escapeHTML(value)}"${value === selected ? ' checked' : ''}${codes}${index === 0 ? ' required' : ''} aria-describedby="${errorField}-error" aria-invalid="${invalid}"><span>${escapeHTML(value)}</span></label>`;
+        }).join('');
+        return `<fieldset><legend>${label}</legend><div class="choice-group">${choices || '<p class="help">Select an equipment name first.</p>'}</div>${fieldError(errorField)}</fieldset>`;
+    }
+
     function requestForm() {
         return html`
             <section aria-labelledby="request-title">
@@ -242,8 +261,8 @@ export function createViews(context) {
                 <form id="request-form" class="request-form panel">
                     <label>Company name<input readonly value="${escapeHTML(getProfile().company || '—')}"></label>
                     <div class="form-grid">
-                        <div><label>Equipment name<input name="equipment" required maxlength="100" value="${escapeHTML(draft.equipment || '')}" aria-describedby="equipmentName-error" aria-invalid="${Boolean(errors.equipmentName)}"></label>${fieldError('equipmentName')}</div>
-                        <div><label>Error code<input name="errorCode" required maxlength="50" value="${escapeHTML(draft.errorCode || '')}" aria-describedby="errorCode-error" aria-invalid="${Boolean(errors.errorCode)}"></label>${fieldError('errorCode')}</div>
+                        ${choiceField('Equipment name', 'equipment', 'equipmentName', equipmentCatalog.map(item => item.equipment), draft.equipment)}
+                        ${choiceField('Error code', 'errorCode', 'errorCode', equipmentCatalog.find(item => item.equipment === draft.equipment)?.codes || [], draft.errorCode)}
                     </div>
                     <div><label class="issue-label">Issue details<textarea name="description" maxlength="500" aria-describedby="symptom-error" aria-invalid="${Boolean(errors.symptom)}">${escapeHTML(draft.description || '')}</textarea></label>${fieldError('symptom')}</div>
                     <div class="form-actions">

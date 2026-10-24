@@ -114,9 +114,12 @@ test('external names and translations are escaped and timestamps use local time'
 test('request draft is preserved without enabling unconnected submission', () => {
     const context = screenContext('CUSTOMER');
     context.view = 'request';
-    context.draft = { equipment: 'TEST-ONLY', description: 'draft text' };
+    context.draft = { equipment: 'AE Cesar 1312', errorCode: 'ALARM-402', description: 'draft text' };
     const screen = createViews(context).workspace();
-    assert.ok(screen.includes('value="TEST-ONLY"'));
+    assert.match(screen, /name="equipment" value="AE Cesar 1312" checked/);
+    assert.match(screen, /name="errorCode" value="ALARM-402" checked/);
+    assert.match(screen, /name="errorCode" value="ERR-MATCH-TUNE"/);
+    assert.ok(!screen.includes('name="errorCode" value="TEMP-COMM-FAIL"'));
     assert.ok(screen.includes('draft text'));
     assert.match(screen, /type="submit"\s+disabled/);
 });

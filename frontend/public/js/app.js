@@ -137,6 +137,13 @@ app.addEventListener('change', async event => {
         render();
         if (key.includes('detail')) openDetail();
     }
+    if (event.target.name === 'equipment' && event.target.form?.id === 'request-form') {
+        const draft = Object.fromEntries(new FormData(event.target.form));
+        const allowed = new Set((event.target.dataset.codes || '').split(',').filter(Boolean));
+        if (!allowed.has(draft.errorCode)) delete draft.errorCode;
+        state.draft = draft;
+        render();
+    }
     if (event.target.id === 'status-filter') {
         await controller.setFilter(event.target.value);
         document.querySelector('#status-filter')?.focus();

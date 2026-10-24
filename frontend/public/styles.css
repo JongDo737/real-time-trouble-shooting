@@ -903,6 +903,64 @@ td .button {
     gap: 56px;
 }
 
+.request-form fieldset {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+}
+
+.request-form legend {
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.choice-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.choice-toggle {
+    position: relative;
+    display: inline-flex;
+    width: auto;
+}
+
+.choice-toggle input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.choice-toggle span {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 8px 14px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    background: white;
+    cursor: pointer;
+}
+
+.choice-toggle input:checked + span {
+    background: var(--brand);
+    border-color: var(--brand);
+    color: white;
+}
+
+.choice-toggle input:focus-visible + span {
+    outline: 3px solid var(--brand);
+    outline-offset: 3px;
+}
+
 .issue-label {
     font-weight: 600;
 }
