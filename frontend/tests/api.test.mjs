@@ -37,6 +37,14 @@ test('login sends exactly the documented fields without a previous token', async
     assert.deepEqual(JSON.parse(requests[0].body), { username: 'test_user', password: 'test-only-password' });
 });
 
+test('signup sends only the confirmed backend camelCase fields', async () => {
+    const { api, requests } = setup(() => new Response(null, { status: 201 }));
+    const input = { clientName: 'Name', companyName: 'Company', position: 'Engineer', username: 'test_user', password: 'test-only-password' };
+    await api.signup({ ...input, client_name: 'wrong', company_name: 'wrong', companyCode: 'not-sent' });
+    assert.deepEqual(JSON.parse(requests[0].body), input);
+    assert.equal(requests[0].headers.Authorization, undefined);
+});
+
 test('call creation preserves the agreed request field names', async () => {
     const { api, requests } = setup();
     const input = { equipmentName: 'TEST', errorCode: 'TEST', symptom: 'test-only description' };
@@ -70,25 +78,30 @@ test('API errors retain the status, code and request identifier', async () => {
         error.status === 409 && error.code === 'ALREADY_ACCEPTED' && error.requestId === 'test-request');
 });
 
-test('unauthorized callback runs for protected calls, not invalid login attempts', async () => {
+test('UNAUTHORIZED clears a session while INVALID_CREDENTIALS stays a login error', async () => {
     let count = 0;
+    let code = 'UNAUTHORIZED';
     const api = createSupportApi({
         baseAddress,
         getAccessToken: () => 'test-only-token',
         onUnauthorized: () => { count += 1; },
-        fetchImpl: async () => Response.json({ error: { code: 'UNAUTHORIZED' } }, { status: 401 }),
+        fetchImpl: async () => Response.json({ error: { code } }, { status: 401 }),
     });
     await assert.rejects(api.getCalls());
     assert.equal(count, 1);
+    code = 'INVALID_CREDENTIALS';
     await assert.rejects(api.login({ username: 'test', password: 'test' }));
     assert.equal(count, 1);
+    code = 'UNAUTHORIZED';
+    await assert.rejects(api.login({ username: 'test', password: 'test' }));
+    assert.equal(count, 2);
 });
 
 test('validates only the limits specified in the API document', () => {
     assert.deepEqual(validateCallInput({ equipmentName: 'TEST', errorCode: 'TEST' }), {});
     assert.ok(validateCallInput({ equipmentName: '', errorCode: 'TEST' }).equipmentName);
     assert.ok(validateCallInput({ equipmentName: 'TEST', errorCode: 'TEST', symptom: 'x'.repeat(501) }).symptom);
-    assert.deepEqual(validateSignupInput({ client_name: 'Test', company_name: 'Test company', position: 'Engineer', username: 'user_1', password: '12345678' }), {});
+    assert.deepEqual(validateSignupInput({ clientName: 'Test', companyName: 'Test company', position: 'Engineer', username: 'user_1', password: '12345678' }), {});
     assert.ok(!validateUtterance('  '));
     assert.ok(!validateUtterance('x'.repeat(2001)));
 });

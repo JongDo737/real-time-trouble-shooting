@@ -16,9 +16,19 @@ services:
     depends_on:
       - frontend
       - backend
+      - voice
       # - fastapi
     restart: unless-stopped
 
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   environment:
+  #     TZ: UTC
+  #   expose:
+  #     - "80"
+  #   restart: unless-stopped
   frontend:
     build:
       context: ./frontend
@@ -27,8 +37,9 @@ services:
       TZ: UTC
       PORT: 80
       HOST: 0.0.0.0
-      API_BASE_URL: /backend/api
-      WS_BASE_URL: /backend/ws
+      API_BASE_URL: /backend/api/
+      WS_BASE_URL: /backend/ws/
+      STT_URL: /voice/stt/
     expose:
       - "80"
     restart: unless-stopped
@@ -64,10 +75,25 @@ services:
       TZ: UTC
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       JWT_SECRET: ${JWT_SECRET}
+      FAISS_DIR: /rag_pipeline/faiss_db/pdf
+
+    volumes:
+      - ./rag_pipeline/faiss_db/pdf:/rag_pipeline/faiss_db/pdf:ro
     expose:
       - "8001"
     ports:
       - "8001:8001"
+    restart: unless-stopped
+
+  voice:
+    build: ./voice
+    environment:
+      JWT_SECRET: ${JWT_SECRET}
+      WHISPER_MODEL: tiny
+    volumes:
+      - whisper_models:/models
+    expose:
+      - "8008"
     restart: unless-stopped
 
   mariadb:
@@ -95,3 +121,4 @@ services:
 
 volumes:
   mariadb_data:
+  whisper_models:

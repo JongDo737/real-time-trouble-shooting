@@ -1,8 +1,7 @@
 export const statuses = ['PENDING', 'CALLING', 'MISSED', 'RESOLVED', 'UNRESOLVED'];
 
-// 목록 필터에서는 통화 중을 제외합니다.
-export const inquiryFilterStatuses = statuses.filter(status => status !== 'CALLING');
-export const summaryStatuses = [...inquiryFilterStatuses];
+export const inquiryFilterStatuses = [...statuses];
+export const summaryStatuses = statuses.filter(status => status !== 'CALLING');
 
 export const profiles = Object.freeze({
     AGENT: Object.freeze({

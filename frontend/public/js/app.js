@@ -16,6 +16,7 @@ document.addEventListener('keydown', event => {
 const app = document.querySelector('#app');
 const screen = document.createElement('div');
 app.append(screen);
+const dialogMarkup = new WeakMap();
 const sessions = createSessionStore(window.sessionStorage);
 const controller = createSupportController({
     config, isPreview, sessions, storage: window.sessionStorage, onChange: render,
@@ -60,11 +61,19 @@ function render() {
     document.querySelector('#announcement').textContent = state.notice;
     if (state.view !== 'call') dialogs.forEach(dialog => dialog.close());
     if (detailOpen) {
-        if (state.view === 'dashboard' && state.data.selected) detailOpen.innerHTML = view.detailContent();
-        else detailOpen.close();
+        if (state.view === 'dashboard' && state.data.selected) {
+            const content = view.detailContent();
+            if (dialogMarkup.get(detailOpen) !== content) {
+                const historyOpen = detailOpen.querySelector('.previous-conversation')?.open;
+                detailOpen.innerHTML = content;
+                dialogMarkup.set(detailOpen, content);
+                const history = detailOpen.querySelector('.previous-conversation');
+                if (history) history.open = Boolean(historyOpen);
+            }
+        } else detailOpen.close();
     }
     if (focused?.isConnected) focused.focus({ preventScroll: true });
-    else if (!detailOpen && focused?.id) document.getElementById(focused.id)?.focus({ preventScroll: true });
+    else if (focused?.id) document.getElementById(focused.id)?.focus({ preventScroll: true });
     const updatedTranscript = app.querySelector('.transcript');
     if (updatedTranscript) updatedTranscript.scrollTop = followLatest ? updatedTranscript.scrollHeight : scrollTop;
 }
@@ -75,12 +84,20 @@ function showDialog(className, titleId, content, id) {
     if (id) dialog.id = id;
     dialog.setAttribute('aria-labelledby', titleId);
     dialog.innerHTML = content;
+    dialogMarkup.set(dialog, content);
     openDialog(app, dialog);
+    if (id === 'end-dialog') dialog.addEventListener('close', () => controller.resumeMicrophone(), { once: true });
     return dialog;
 }
 
 function openDetail() {
-    return showDialog('detail-dialog', 'detail-title', screens().detailContent(), 'detail-dialog');
+    const callId = state.data.selected?.callId;
+    const dialog = showDialog('detail-dialog', 'detail-title', screens().detailContent(), 'detail-dialog');
+    // 목록이 자동 갱신되어도 현재 DOM의 상세 버튼으로 포커스를 돌려줍니다.
+    dialog.addEventListener('close', () => {
+        app.querySelector(`[data-detail="${CSS.escape(callId || '')}"]`)?.focus();
+    }, { once: true });
+    return dialog;
 }
 
 function openNotes() {
@@ -173,6 +190,9 @@ app.addEventListener('click', async event => {
         case 'notes':
             openNotes();
             break;
+        case 'microphone':
+            controller.toggleMicrophone();
+            break;
         case 'close-notes':
             document.querySelector('.notes-dialog')?.close();
             break;
@@ -181,6 +201,7 @@ app.addEventListener('click', async event => {
             await controller.acceptCall();
             break;
         case 'end':
+            controller.stopMicrophone();
             showDialog('end-dialog', 'end-title', screens().endCallContent(), 'end-dialog');
             break;
         case 'close-end':
@@ -223,11 +244,6 @@ app.addEventListener('submit', async event => {
     focusErrors();
 });
 
-// 음성 담당 코드에서 최종 인식된 텍스트를 전달합니다.
-export function sendRecognizedText(text) {
-    return controller.sendRecognizedText(text);
-}
-
 const timeRefresh = setInterval(() => {
     document.querySelectorAll('[data-received-at]').forEach(element => {
         element.textContent = formatTimeAgo(element.dataset.receivedAt, state.language);
@@ -236,5 +252,9 @@ const timeRefresh = setInterval(() => {
 window.addEventListener('pagehide', () => {
     clearInterval(timeRefresh);
     controller.dispose();
+});
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) controller.stopMicrophone();
+    else controller.resumeMicrophone();
 });
 await controller.initialize();
