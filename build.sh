@@ -49,4 +49,4 @@ npm run build
 cd "$ROOT_DIR"
 
 echo "[6/6] docker compose 실행"
-# docker compose 명령은 여기에 넣으면 됩니다.
+docker compose up -d --build
