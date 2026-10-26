@@ -1371,16 +1371,76 @@ dialog::backdrop {
     font-size: 12px;
 }
 
-.review-marker.risk-info {
-    border-color: #b7c3ce;
-    background: #f4f7f9;
-    color: #3d4c59;
+/* 위험도 등급: 빨강 CRITICAL · 노랑 WARNING · 초록 INFO */
+.risk-banner {
+    --risk: #1f7a47;
+    --risk-ink: #1a6b3d;
+    --risk-bg: #eef8f2;
+    --risk-line: #a9d8bc;
+    margin-top: 16px;
+    padding: 14px 16px;
+    border: 1px solid var(--risk-line);
+    border-left: 6px solid var(--risk);
+    border-radius: var(--radius);
+    background: var(--risk-bg);
 }
 
-.review-marker.risk-critical {
-    border-color: #e3b4b4;
-    background: #fdf4f4;
-    color: #8a2a2a;
+.risk-banner.risk-warning {
+    --risk: #e0a100;
+    --risk-ink: #8a5d00;
+    --risk-bg: #fff8e5;
+    --risk-line: #f0d68c;
+}
+
+.risk-banner.risk-critical {
+    --risk: #c62828;
+    --risk-ink: #b42318;
+    --risk-bg: #fdeeee;
+    --risk-line: #efb3b3;
+}
+
+.rag-panel .risk-banner p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.rag-panel .risk-banner .risk-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--risk-ink);
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.risk-dot {
+    flex: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--risk);
+}
+
+.risk-level {
+    padding: 1px 8px;
+    border-radius: 999px;
+    background: var(--risk-ink);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .04em;
+}
+
+.rag-panel .risk-banner .risk-meaning {
+    margin-top: 6px;
+    color: var(--ink);
+}
+
+.rag-panel .risk-banner .risk-reason {
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 13px;
 }
 
 .manual-sources {

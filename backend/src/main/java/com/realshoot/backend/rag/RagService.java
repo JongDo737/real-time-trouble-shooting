@@ -58,7 +58,7 @@ public class RagService {
         Call callRef = callRepository.getReferenceById(callPk);
         List<ManualRef> refs = response.sources().stream()
                 .map(s -> ManualRef.of(callRef, s.doc(), s.page(), s.text(),
-                        toFloat(s.score() != null ? s.score() : response.score()), s.riskLevel()))
+                        toFloat(s.score() != null ? s.score() : response.score()), response.riskLevel()))
                 .toList();
         manualRefRepository.saveAll(refs);
     }

@@ -44,13 +44,19 @@ public class ManualRef {
 
     private Float score;
 
-    public static ManualRef of(Call call, String docTitle, Integer pageNo, String text, Float score) {
+    /** 이 검색 결과의 위험도 INFO | WARNING | CRITICAL (RAG 응답 risk_level) */
+    @Column(name = "risk_level", length = 10)
+    private String riskLevel;
+
+    public static ManualRef of(Call call, String docTitle, Integer pageNo, String text, Float score,
+                               String riskLevel) {
         ManualRef ref = new ManualRef();
         ref.call = call;
         ref.docTitle = docTitle;
         ref.pageNo = pageNo;
         ref.text = text;
         ref.score = score;
+        ref.riskLevel = riskLevel;
         return ref;
     }
 }

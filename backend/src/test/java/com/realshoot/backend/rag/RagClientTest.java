@@ -120,6 +120,19 @@ class RagClientTest {
         assertThat(SolutionResponse.from(response).status()).isEqualTo("not_found");
     }
 
+    @Test
+    void rag_query의_위험도를_해결방법_응답으로_넘긴다() {
+        server.enqueue(json(200,
+                "{\"status\":\"found\",\"answer\":\"1. 점검\",\"sources\":[{\"doc\":\"m.md\",\"section\":\"[SPEC-01]\"}],"
+                        + "\"needs_review\":false,\"handoff\":false,\"risk_level\":\"WARNING\",\"risk_reason\":\"매처 손상\"}"));
+
+        var solution = SolutionResponse.from(
+                client.ragQuery(new RagQueryRequest("call-1", "q-1", "AE Cesar 1312", "ALARM-402", null), AGENT));
+
+        assertThat(solution.riskLevel()).isEqualTo("WARNING");
+        assertThat(solution.riskReason()).isEqualTo("매처 손상");
+    }
+
     private static TranslateRequest translateRequest() {
         return new TranslateRequest("call-1", "u-1", "The fan is not spinning.", "en", "ko", "USER", "CNC-500",
                 "E-1042", List.of());
