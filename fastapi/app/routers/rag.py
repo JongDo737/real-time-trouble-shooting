@@ -1,3 +1,4 @@
+import re
 import time
 
 from fastapi import APIRouter, Depends, Request
@@ -24,16 +25,21 @@ def get_rag_index(request: Request) -> RagIndex:
     return index
 
 
-def _sources(chunks) -> list[Source]:
-    seen, sources = set(), []
+_HEADER = re.compile(r"^\[장비명:[^\n]*\]\n?")  # 청크 맨 앞의 메타데이터 헤더 (본문이 아님)
+
+
+def _sources(chunks, score: float | None = None) -> list[Source]:
+    """문서 · 섹션별로 묶는다. 같은 묶음의 청크 본문은 이어 붙여 text로 돌려준다."""
+    groups: dict[tuple[str, str | None], list[str]] = {}
     for chunk in chunks:
         doc = chunk.metadata.get("source") or "unknown"
         section = chunk.metadata.get("section")
         section = None if section in (None, "General") else section
-        if (doc, section) not in seen:
-            seen.add((doc, section))
-            sources.append(Source(doc=doc, section=section))
-    return sources
+        groups.setdefault((doc, section), []).append(_HEADER.sub("", chunk.text, count=1).strip())
+    return [
+        Source(doc=doc, section=section, text="\n\n".join(t for t in texts if t) or None, score=score)
+        for (doc, section), texts in groups.items()
+    ]
 
 
 def _message(outcome) -> str | None:
@@ -74,11 +80,13 @@ async def rag_query(
         answer=outcome.answer,
         message=_message(outcome),
         reason=outcome.reason,
-        sources=_sources(outcome.chunks),
+        sources=_sources(outcome.chunks, outcome.score if found else None),
         score=outcome.score,
         attempts=outcome.attempts,
         needs_review=outcome.needs_review,
         exact_match=outcome.exact_match,
+        risk_level=outcome.risk_level,
+        risk_reason=outcome.risk_reason,
         handoff=not found,
         latency_ms=round((time.perf_counter() - started) * 1000),
         usage=Usage(in_tok=outcome.in_tok, out_tok=outcome.out_tok),

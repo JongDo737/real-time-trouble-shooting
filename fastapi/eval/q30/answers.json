@@ -1,0 +1,474 @@
+[
+  {
+    "id": "Q01",
+    "expected_summary": "정상치 <5%, 경고치 >10% 초과 상태임. 가변 커패시터 아킹 흔적 점검 및 은도금 단자 규정 토크(4.5 Nm) 체결 필요.",
+    "source_manual": "AE Cesar RF User Manual Ch.6 p.168",
+    "expect": {
+      "status": "found",
+      "must_contain": [
+        "5%",
+        "10%",
+        "커패시터",
+        "아킹",
+        "토크|4.5"
+      ],
+      "section": "-01]",
+      "risk_level": "WARNING"
+    }
+  },
+  {
+    "id": "Q02",
+    "expected_summary": "1) MFC 유량 → 2) 챔버 압력 20~200mTorr → 3) 반사파 >50% → 4) 쿼츠 윈도우 식각 0.5mm 초과 크랙 순 점검.",
+    "source_manual": "RIE/ICP Maintenance Guide Sec 5.3",
+    "expect": {
+      "status": "found",
+      "must_contain": [
+        "MFC",
+        "20~200|20 ~ 200",
+        "50%",
+        "0.5"
+      ],
+      "section": "-02]",
+      "must_contain_before": [
+        "MFC",
+        "20~200",
+        "50%",
+        "0.5"
+      ],
+      "risk_level": "WARNING"
+    },
+    "note": "채점 결과를 본 뒤 필수 단어를 바로잡음: 질문이 묻지 않은 항목이거나 표기 차이(공백·영문)로 정답이 감점되던 것"
+  },
+  {
+    "id": "Q03",
+    "expected_summary": "인렛 압력을 2 psig 단위로 상하향 조정하고, 압력 평형 후 Zero 버튼을 최소 5초간 길게 눌러 영점 초기화.",
+    "source_manual": "Brooks GF40 Manual Sec 2-17 p.23",
+    "expect": {
+      "status": "found",
+      "must_contain": [
+        "2 psig",
+        "Zero",
+        "5초|5 seconds"
+      ],
+      "section": "-03]",
+      "risk_level": "WARNING"
+    }
+  },
+  {
+    "id": "Q04",
+    "expected_summary": "도구 없이는 임의 해제 불가하며 종료 시 자동 복원 필수. EMO는 240VA 초과 차단 후 반드시 '수동 리셋'해야 재인가.",
+    "source_manual": "SEMI S2-0818 Sec 11.7 & 12.2",
+    "expect": {
+      "status": "found",
+      "must_contain": [
+        "수동 리셋|Manual Reset",
+        "240",
+        "자동"
+      ],
+      "section": "-04]",
+      "risk_level": "CRITICAL"
+    }
+  },
+  {
+    "id": "Q05",
+    "expected_summary": "DC 바이어스 경고치(>15% 편차) 초과. 실리콘 전극 두께 손실이 10% 초과하거나 표면 피팅 시 즉시 신품 교체.",
+    "source_manual": "ICP Service Manual V2.4 Sec 3.2.5",
+    "expect": {
+      "status": "found",
+      "must_contain": [
+        "15%",
+        "10%",
+        "전극"
+      ],
+      "section": "-05]",
+      "risk_level": "WARNING"
+    }
+  },
+  {
+    "id": "Q06",
+    "expected_summary": "4개 광학센서 엣지 측정으로 상태(Condition 1~4) 분류. 자동 보정 불가 시 이송 중단. 매뉴얼 Sec 5.9.1에 따라 원점 복귀.",
+    "source_manual": "Logosol Robot App Manual Sec 5.9",
+    "expect": {
+      "status": "found",
+      "must_contain": [
+        "Condition",
+        "5.9.1",
+        "호밍|Homing|원점"
+      ],
+      "section": "-06]",
+      "risk_level": "WARNING"
+    }
+  },
+  {
+    "id": "Q07",
+    "expected_summary": "서비스 모드 시 클램프 인터록 무시되므로 협착 주의. 씰 P/N: AMAT 0190-09539, 라이너 P/N: 0021-09718 매칭.",
+    "source_manual": "AMAT Centura Slit Valve Manual Sec 7.5",
+    "expect": {
+      "status": "found",
+      "must_contain": [
+        "0190-09539",
+        "0021-09718",
+        "인터록"
+      ],
+      "section": "-07]",
+      "risk_level": "WARNING"
+    }
+  },
+  {
+    "id": "Q08",
+    "expected_summary": "격리 모드 설정 후 400 kPa 압축공기 청소. 복구 시 최소 15분 이상 가동 후 스모크 세팅(0.02% obs/m) 정상화.",
+    "source_manual": "Xtralis VESDA Guide Sec 2.4 p.14",
+    "expect": {
+      "status": "found",
+      "must_contain": [
+        "400",
+        "15분",
+        "0.02"
+      ],
+      "section": "-08]",
+      "risk_level": "CRITICAL"
+    }
+  },
+  {
+    "id": "Q09",
+    "expected_summary": "SECS/GEM 텔레메트리 기반 20~40분 조기 경보. 챔버 키트/샤워헤드 사전 예측 후 SAP PM 작업 지시서 자동 발행.",
+    "source_manual": "Semiconductor Fab SmartFDC Guide p.34",
+    "expect": {
+      "status": "found",
+      "must_contain": [
+        "20~40|20 ~ 40|40분",
+        "SAP",
+        "PM"
+      ],
+      "section": "-09]",
+      "risk_level": "INFO"
+    }
+  },
+  {
+    "id": "Q10",
+    "expected_summary": "노이즈 방지를 위한 RS-232 차폐(Shielded) 케이블 의무. 주 전원 차단 용량 최소 10,000 AIC 차단기 장착 필수.",
+    "source_manual": "AccuThermo AW610 Manual Sec 2.5",
+    "expect": {
+      "status": "found",
+      "must_contain": [
+        "RS-232",
+        "차폐",
+        "10,000"
+      ],
+      "section": "-10]",
+      "risk_level": "WARNING"
+    }
+  },
+  {
+    "id": "Q11",
+    "expected_summary": "단변량 UCL/LCL이 정상이어도 펌프 전력·펌핑 속도가 궤적 밖 → 배기 부산물 축적. SVID/ECID/ALID를 같은 스텝으로 맞춘 뒤 압력 알람 전에 로트 홀드.",
+    "source_manual": "SmartFDC SECS/GEM Multivariate Guide Sec.3 p.12",
+    "expect": {
+      "status": "found",
+      "must_contain": [
+        "펌프 전력",
+        "홀드|Hold"
+      ],
+      "section": "-11]",
+      "risk_level": "INFO"
+    }
+  },
+  {
+    "id": "Q12",
+    "expected_summary": "반사 전력은 VSWR로 정량화. 어댑티브 스윕 수렴 5.0172 ms 이내. 임계 초과 시 자동 전력 제한, 전력 버스트 후에도 미정합이면 즉시 셧다운.",
+    "source_manual": "RF Auto Matcher VSWR Control Spec Sec.4 p.27",
+    "expect": {
+      "status": "found",
+      "must_contain": [
+        "5.0172"
+      ],
+      "section": "-12]",
+      "must_contain_before": [
+        "VSWR",
+        "셧다운|Shutdown"
+      ],
+      "risk_level": "WARNING"
+    },
+    "note": "채점 결과를 본 뒤 필수 단어를 바로잡음: 질문이 묻지 않은 항목이거나 표기 차이(공백·영문)로 정답이 감점되던 것"
+  },
+  {
+    "id": "Q13",
+    "expected_summary": "1) CW 기준 → 2) 변조 신호로 배경 노이즈 → 3) 전력 램프. EVN이 약 -30 dB에서 20 dB 이상 상승하면 H1(방전) → 경보, 측정 버퍼 폐기, RF 급감.",
+    "source_manual": "RF Breakdown EVN Detector Spec Sec.6 p.41",
+    "expect": {
+      "status": "found",
+      "must_contain": [
+        "EVN",
+        "20 dB|20dB"
+      ],
+      "section": "-13]",
+      "risk_level": "CRITICAL"
+    }
+  },
+  {
+    "id": "Q14",
+    "expected_summary": "할로겐 식각으로 결합 계수가 변해 균일도 저하, 임계 두께 미만은 내파 위험. 매처 모터 스텝의 한 방향 편향 + OES Si·O 피크 상승 시 예방 교체.",
+    "source_manual": "ICP Quartz Window Life OES Spec Sec.5 p.33",
+    "expect": {
+      "status": "found",
+      "must_contain": [
+        "OES",
+        "매처|Matcher"
+      ],
+      "section": "-14]",
+      "must_contain_before": [
+        "OES",
+        "매처"
+      ],
+      "risk_level": "CRITICAL"
+    },
+    "note": "채점 결과를 본 뒤 필수 단어를 바로잡음: 질문이 묻지 않은 항목이거나 표기 차이(공백·영문)로 정답이 감점되던 것"
+  },
+  {
+    "id": "Q15",
+    "expected_summary": "솔레노이드 지령 대비 리미트 스위치 완료 기준 0.8초. 늘어나면 공압 누설 또는 가이드 마찰. 일반 클린룸 와이퍼 대신 폼텍 스크러빙.",
+    "source_manual": "AMAT Centura Slit Valve Particle Spec Sec.7 p.58",
+    "expect": {
+      "status": "found",
+      "must_contain": [
+        "0.8초",
+        "폼텍|Foamtec"
+      ],
+      "section": "-15]",
+      "risk_level": "WARNING"
+    }
+  },
+  {
+    "id": "Q16",
+    "expected_summary": "헬륨 압력 10~20 Torr 창 아래 → 열교환 단절. 누설 유량 상한 초과 시 1초 이내 RF 차단 후 Abort. 후보: 포커스 링 씰, 세라믹 침식, 척킹 전압 강하.",
+    "source_manual": "ESC Helium Photoresist Interlock Spec Sec.3 p.22",
+    "expect": {
+      "status": "found",
+      "must_contain": [
+        "10~20",
+        "1초",
+        "Abort"
+      ],
+      "section": "-16]",
+      "risk_level": "WARNING"
+    }
+  },
+  {
+    "id": "Q17",
+    "expected_summary": "키는 잠금 보관, 책임자만 지급. 우회는 의도적 조작만 허용하고 출력 제한을 켠다. 도어를 닫으면 인터록은 추가 조작 없이 자동 복원.",
+    "source_manual": "SEMI S2-0703 Interlock Defeat Key Sec.11.7 p.19",
+    "expect": {
+      "status": "found",
+      "must_contain": [
+        "자동 복원|자동으로 복원|Auto-Restore|자동"
+      ],
+      "section": "-17]",
+      "risk_level": "CRITICAL"
+    }
+  },
+  {
+    "id": "Q18",
+    "expected_summary": "우회 전 GEM E30 Offline 또는 Online-Local로 잠금·교차 검증. 인터록을 건드리면 작업 허가 없이 시작 거절. 커버를 연 상태의 고전압 차단이 센서로 기록된 뒤에만 양산 복귀.",
+    "source_manual": "STPA Equipment Control State Spec Sec.2 p.9",
+    "expect": {
+      "status": "found",
+      "must_contain": [
+        "E30",
+        "Offline|Online-Local"
+      ],
+      "section": "-18]",
+      "risk_level": "CRITICAL"
+    }
+  },
+  {
+    "id": "Q19",
+    "expected_summary": "중심 높이 1,320~1,470 mm, 적층 최상단 1,680 mm 이하, 전방 도달 330~406 mm, 터치 하단 910 mm 이상, 시청 거리 457~762 mm. 한국 남성 눈높이는 서구권보다 약 32 mm 낮아 높이 조절 HMI 필요.",
+    "source_manual": "SEMI S8 HMI Reach Envelope Sec.4 p.16",
+    "expect": {
+      "status": "found",
+      "must_contain": [
+        "1,320|1320",
+        "1,680|1680",
+        "406",
+        "910"
+      ],
+      "section": "-19]",
+      "risk_level": "INFO"
+    }
+  },
+  {
+    "id": "Q20",
+    "expected_summary": "슬릿 닫힘과 헬륨 압력을 같은 마이크로초 타임스탬프로 정렬. 밸브 지연 + 헬륨 요동 + 매처 튜닝 지연이 동시에면 안착 불량으로 정지. 가스·고전압 차단 후 Safe Standby.",
+    "source_manual": "Unified Predictive Maintenance Architecture Sec.8 p.44",
+    "expect": {
+      "status": "found",
+      "must_contain": [
+        "타임스탬프",
+        "Safe Standby|Safe"
+      ],
+      "section": "-20]",
+      "risk_level": "INFO"
+    }
+  },
+  {
+    "id": "Q21",
+    "expected_summary": "정상 진동 <0.5 mm/s RMS, 경고 1.0, 트립 2.0. 정격 회전 8분 이내, 12분 초과 시 베어링·밸런스 점검. 바디 70°C 초과 런 금지. 포어라인 <0.5 Torr에서만 기동. 자기 부상 전류 >정격 30%면 베어링 카트리지 교체.",
+    "source_manual": "Turbo Pump Vibration Limit Spec Sec.4 p.21",
+    "expect": {
+      "status": "found",
+      "must_contain": [
+        "1.0",
+        "2.0",
+        "8분",
+        "70"
+      ],
+      "section": "-21]",
+      "risk_level": "WARNING"
+    }
+  },
+  {
+    "id": "Q22",
+    "expected_summary": "공급 18~22°C, ΔT ≤5°C 정상, ΔT >8°C는 유로 막힘. 설정 유량 80% 미만이 10초 지속되면 트립. 공급 3.0~4.5 barg, 2.5 barg 미만이면 RF·히터 감출력. 저항률 ≥1 MΩ·cm.",
+    "source_manual": "Fab PCW Supply Spec Sec.2 p.11",
+    "expect": {
+      "status": "found",
+      "must_contain": [
+        "18",
+        "80%",
+        "10초",
+        "2.5"
+      ],
+      "section": "-22]",
+      "risk_level": "WARNING"
+    }
+  },
+  {
+    "id": "Q23",
+    "expected_summary": "히터를 레시피와 같은 100°C 또는 45°C로 둔 뒤, 1×10^-5 Torr 이하에서 30분 안정 후 영점. 허용 오프셋 풀 스케일 ±0.05%. 0.5% 초과는 다이어프램 오염으로 교체. 영점 후 30분은 공정 가스 금지.",
+    "source_manual": "Capacitance Manometer Zero Spec Sec.3 p.17",
+    "expect": {
+      "status": "found",
+      "must_contain": [
+        "30분",
+        "0.05%",
+        "0.5%"
+      ],
+      "section": "-23]",
+      "risk_level": "WARNING"
+    }
+  },
+  {
+    "id": "Q24",
+    "expected_summary": "5초 창 압력 ±2% 이내. 개도 진동 >5%p면 헌팅. 정상 개도 15~85%, 정착 3초 이내. P를 올리기 전에 I 시간을 늘린다. 플레이트 막이 있으면 같은 개도에서 컨덕턴스가 줄어 설정 압력을 못 맞춘다.",
+    "source_manual": "APC Throttle Tuning Spec Sec.5 p.29",
+    "expect": {
+      "status": "found",
+      "must_contain": [
+        "5%p",
+        "I 시간|적분"
+      ],
+      "section": "-24]",
+      "risk_level": "WARNING"
+    }
+  },
+  {
+    "id": "Q25",
+    "expected_summary": "산화막 CO 483 nm, 질화막 CN 387 nm. 보조 파장 비가 기준 70% 미만이면 창 오염. 뷰포트 투과율 <80%면 창 교체. 최대 식각 시간의 110%까지 신호가 없으면 과식각 전에 정지. 광섬유 굽힘 반경 50 mm 미만 금지.",
+    "source_manual": "OES Endpoint Window Spec Sec.6 p.36",
+    "expect": {
+      "status": "found",
+      "must_contain": [
+        "483",
+        "387",
+        "80%",
+        "110%"
+      ],
+      "section": "-25]",
+      "risk_level": "WARNING"
+    }
+  },
+  {
+    "id": "Q26",
+    "expected_summary": "1 Torr까지 슬로우 펌핑 20초, 50 mTorr까지 총 90초 이내. 120초 초과 시 도어 O-ring → 러핑 밸브 시트 → 펌프 오일 역류 순. 벤트는 N2, 대기압 -10~+20 Torr. 슬로우 펌핑 스텝은 삭제 금지.",
+    "source_manual": "Loadlock Pumpdown Spec Sec.2 p.14",
+    "expect": {
+      "status": "found",
+      "must_contain": [
+        "20초",
+        "90초",
+        "O-ring",
+        "러핑"
+      ],
+      "section": "-26]",
+      "risk_level": "WARNING"
+    }
+  },
+  {
+    "id": "Q27",
+    "expected_summary": "균일도 1σ ≤1.5%. 2.5% 초과 + 가장자리 두꺼움 → 중심 홀 막힘. 같은 유량 차압 +15%는 홀 제한, -10%는 홀 확대·누설. 존 온도 편차 >3°C면 속도 맵 기울어짐. NF3 시즌·더미 5매 후에도 차압 미회복 시 습식 세정.",
+    "source_manual": "AMAT Producer Showerhead Uniformity Spec Sec.4 p.31",
+    "expect": {
+      "status": "found",
+      "must_contain": [
+        "1.5%",
+        "2.5%",
+        "15%"
+      ],
+      "section": "-27]",
+      "risk_level": "WARNING"
+    }
+  },
+  {
+    "id": "Q28",
+    "expected_summary": "버블러 설정 ±0.3°C, ±1.0°C 초과 시 도즈 이탈. 라인은 버블러보다 10~20°C 높게 유지해 응축 방지. 캐리어는 출구 압력 게이지 ±2%로 확인. 앰플 잔량 10% 미만이면 교체.",
+    "source_manual": "ALD Bubbler Temperature Spec Sec.3 p.19",
+    "expect": {
+      "status": "found",
+      "must_contain": [
+        "0.3",
+        "1.0",
+        "10~20"
+      ],
+      "section": "-28]",
+      "risk_level": "WARNING"
+    }
+  },
+  {
+    "id": "Q29",
+    "expected_summary": "역극성으로 풀 스케일 20~40%를 2초 인가 후 0 V. 잔류 전압이 ±50 V 안에 들어오기 전에 핀 상승 금지. 플라즈마 오프 후 3초 대기, 헬륨 <0.5 Torr 후 핀 상승. 같은 레시피 3회 연속 스틱이면 폴리머 제거 후 레시피 재조정.",
+    "source_manual": "ESC Dechuck Sequence Spec Sec.5 p.27",
+    "expect": {
+      "status": "found",
+      "must_contain": [
+        "20~40%",
+        "50 V",
+        "3초",
+        "0.5 Torr"
+      ],
+      "section": "-29]",
+      "risk_level": "WARNING"
+    }
+  },
+  {
+    "id": "Q30",
+    "expected_summary": "핀 간 상단 높이 ±0.1 mm 이내, 0.3 mm 초과 시 기울어 핀 자국. 블레이드 간격 1.5~2.5 mm. 1.0 mm 미만 긁힘, 3.0 mm 초과 안착 충격. 센서·엔코더 차이 ≥0.2 mm면 이송 정지. 벨로우즈 리크는 핀 상승·하강을 각각 측정.",
+    "source_manual": "LAM Lift Pin Height Spec Sec.6 p.24",
+    "expect": {
+      "status": "found",
+      "must_contain": [
+        "0.1",
+        "1.5",
+        "2.5"
+      ],
+      "section": "-30]",
+      "must_contain_before": [
+        "0.1",
+        "1.5",
+        "2.5",
+        "0.2"
+      ],
+      "risk_level": "WARNING"
+    },
+    "note": "채점 결과를 본 뒤 필수 단어를 바로잡음: 질문이 묻지 않은 항목이거나 표기 차이(공백·영문)로 정답이 감점되던 것"
+  }
+]

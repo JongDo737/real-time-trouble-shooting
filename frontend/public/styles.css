@@ -1371,6 +1371,18 @@ dialog::backdrop {
     font-size: 12px;
 }
 
+.review-marker.risk-info {
+    border-color: #b7c3ce;
+    background: #f4f7f9;
+    color: #3d4c59;
+}
+
+.review-marker.risk-critical {
+    border-color: #e3b4b4;
+    background: #fdf4f4;
+    color: #8a2a2a;
+}
+
 .manual-sources {
     margin: 24px 0 0;
     padding: 16px 0 0 20px;

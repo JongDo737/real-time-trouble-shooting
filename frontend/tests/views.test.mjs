@@ -90,12 +90,18 @@ test('backend UUID and raw detail messages render with the viewer role', () => {
 
 test('stored RAG sources with no answer display a completed result', () => {
     const context = screenContext();
-    context.data.solution = { status: 'found', answer: null, sources: [{ doc: 'Manual', page: 7, section: null }], needsReview: true, handoff: true };
+    context.data.solution = {
+        status: 'found', answer: null, sources: [{ doc: 'Manual', page: 7, section: null }],
+        needsReview: true, handoff: true, riskLevel: 'CRITICAL', riskReason: '<b>내파</b>',
+    };
     const screen = createViews(context).callScreen();
     assert.ok(screen.includes('관련 매뉴얼을 찾았습니다.'));
     assert.ok(!screen.includes('관련 매뉴얼을 찾고 있습니다.'));
     assert.ok(screen.includes('Manual · p. 7'));
     assert.ok(screen.includes('해결방법을 찾지 못했습니다. 엔지니어 연결이 필요합니다.'));
+    assert.ok(screen.includes('class="review-marker risk-critical"'));
+    assert.ok(screen.includes('CRITICAL · &lt;b&gt;내파&lt;/b&gt;'));
+    assert.ok(!screen.includes('<b>내파</b>'));
 });
 
 test('external names and translations are escaped and timestamps use local time', () => {

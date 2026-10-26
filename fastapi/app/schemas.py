@@ -94,6 +94,8 @@ class Source(BaseModel):
     # 파이프라인 메타데이터에 page가 아직 없어 선택 필드로 둔다 (data-contract.md §4)
     page: int | None = None
     section: str | None = None
+    text: str | None = None  # 근거 청크 본문 (백엔드가 출처와 함께 저장)
+    score: float | None = None  # 근거 묶음을 평가한 점수 (최상위 score와 같은 값, 0.0~1.0)
 
 
 class RagResponse(BaseModel):
@@ -108,6 +110,9 @@ class RagResponse(BaseModel):
     attempts: int = 0
     needs_review: bool = False
     exact_match: bool | None = None  # found일 때: 같은 장비·오류코드 사례(true) / 관련 사례만(false)
+    # found일 때: 근거 문서의 위험도 중 가장 높은 것 (INFO < WARNING < CRITICAL). 문서에 위험도 표기가 없으면 null
+    risk_level: Literal["INFO", "WARNING", "CRITICAL"] | None = None
+    risk_reason: str | None = None  # 위험도 줄의 괄호 안 이유 (예: "인터록·EMO 오조작 시 인명 위험")
     handoff: bool = False
     latency_ms: int = 0
     usage: Usage = Usage()

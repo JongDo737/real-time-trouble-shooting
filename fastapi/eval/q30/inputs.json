@@ -1,0 +1,242 @@
+[
+  {
+    "id": "Q01",
+    "category": "식각 (RF Power)",
+    "equipment_name": "AE Cesar 1312 RF Generator / Seren MC2 Matcher",
+    "error_code": null,
+    "error_code_known": "ALARM-402",
+    "symptom": "반사파가 12%까지 튈 때 점검 기준과 매처 조치법은?"
+  },
+  {
+    "id": "Q02",
+    "category": "식각 (플라즈마)",
+    "equipment_name": "ICP-RIE 식각 장비",
+    "error_code": null,
+    "error_code_known": "NO-ALARM-IGNITION-FAIL",
+    "symptom": "알람 코드 없이 플라즈마 점화가 안 될 때 점검 순서 의사결정 트리는?"
+  },
+  {
+    "id": "Q03",
+    "category": "가스계 (MFC)",
+    "equipment_name": "Brooks GF40 질량 유량 제어기",
+    "error_code": null,
+    "error_code_known": "AL40",
+    "symptom": "유량이 계속 헌팅할 때 라인 압력 조정 및 영점(Zero) 보정법은?"
+  },
+  {
+    "id": "Q04",
+    "category": "안전 규격 (SEMI)",
+    "equipment_name": "Fab 식각 장비",
+    "error_code": null,
+    "error_code_known": null,
+    "symptom": "SEMI S2-0818 규격에 따른 PM 작업 중 안전 인터록 우회(Defeat) 승인 조건과, EMO 버튼 복구 시 전원이 바로 켜지는지?"
+  },
+  {
+    "id": "Q05",
+    "category": "챔버 (ESC/전극)",
+    "equipment_name": "300mm ICP 에처 정전척",
+    "error_code": null,
+    "error_code_known": "HE-LEAK-HIGH",
+    "symptom": "DC 셀프 바이어스가 18% 흔들릴 때 실리콘 전극 교체 기준은?"
+  },
+  {
+    "id": "Q06",
+    "category": "이송 로봇 (WHR)",
+    "equipment_name": "Logosol SCARA 로봇",
+    "error_code": null,
+    "error_code_known": "ERR-WHR-OUT-OF-POCKET",
+    "symptom": "로봇 블레이드에서 웨이퍼 안착 위치 에러 판정 조건 4가지와 엔코더 호밍 절차는?"
+  },
+  {
+    "id": "Q07",
+    "category": "진공계 (슬릿밸브)",
+    "equipment_name": "AMAT Centura 챔버 슬릿 밸브",
+    "error_code": null,
+    "error_code_known": null,
+    "symptom": "Section 7.5.1 서비스 모드 리크 체크 주의사항과 슬릿 밸브 액추에이터 씰/도어 라이너 파트 넘버는?"
+  },
+  {
+    "id": "Q08",
+    "category": "서브팹 (화재감지)",
+    "equipment_name": "Xtralis VESDA LaserPLUS 연기 감지기",
+    "error_code": null,
+    "error_code_known": null,
+    "symptom": "서브팹 정비 중 오알람 방지를 위한 사전 격리 및 청소 후 복구 기준은?"
+  },
+  {
+    "id": "Q09",
+    "category": "설비 지능화 (FDC)",
+    "equipment_name": "SmartFDC (SECS/GEM 300 Telemetry)",
+    "error_code": null,
+    "error_code_known": null,
+    "symptom": "챔버 드리프트 조기 경보 발생 시 예비 부품 예측 및 SAP PM 연동 절차는?"
+  },
+  {
+    "id": "Q10",
+    "category": "열처리 (RTP, 환각 검증용)",
+    "equipment_name": "AccuThermo AW610 RTP",
+    "error_code": null,
+    "error_code_known": "ERR-PWR-SUPPLY-BOARD",
+    "symptom": "통신 케이블 차폐 조건과 과전류 차단기 안전 규격은?"
+  },
+  {
+    "id": "Q11",
+    "category": "이상탐지 (FDC)",
+    "equipment_name": "SmartFDC (SECS/GEM)",
+    "error_code": null,
+    "error_code_known": "ERR-FDC-MV01",
+    "symptom": "압력·유량·온도는 관리선 안인데 다변량 경보가 뜨면 무엇을 보고 배기 막힘을 판단하나?"
+  },
+  {
+    "id": "Q12",
+    "category": "식각 (RF 정합)",
+    "equipment_name": "50Ω Auto Matcher",
+    "error_code": null,
+    "error_code_known": "ALARM-VSWR",
+    "symptom": "반사 전력이 늘고 다중 RF가 셧다운될 때 수렴 기준은?"
+  },
+  {
+    "id": "Q13",
+    "category": "식각 (RF 방전)",
+    "equipment_name": "고진공 RF 경로",
+    "error_code": null,
+    "error_code_known": "ERR-RFBD-EVN",
+    "symptom": "멀티팩터·코로나를 작업자 없이 차단하는 판정 순서는?"
+  },
+  {
+    "id": "Q14",
+    "category": "식각 (쿼츠)",
+    "equipment_name": "ICP 상단 쿼츠 윈도우",
+    "error_code": null,
+    "error_code_known": "ERR-QZ-LOSS",
+    "symptom": "상단 쿼츠 윈도우가 얇아질 때 교체 판단에 쓰는 전기·광학 지표는?"
+  },
+  {
+    "id": "Q15",
+    "category": "진공 (슬릿밸브)",
+    "equipment_name": "AMAT Centura 5200 슬릿 밸브",
+    "error_code": null,
+    "error_code_known": "ERR-SLIT-DELAY",
+    "symptom": "파티클을 만들 때 지연 기준과 세정법은?"
+  },
+  {
+    "id": "Q16",
+    "category": "챔버 (ESC)",
+    "equipment_name": "식각 ESC 후면 헬륨",
+    "error_code": null,
+    "error_code_known": "ERR-PR-BURN",
+    "symptom": "후면 헬륨이 빠질 때 감광액 탄화를 막는 인터록 조건은?"
+  },
+  {
+    "id": "Q17",
+    "category": "안전 (SEMI S2)",
+    "equipment_name": "유지보수 중 인터록 Defeat Key",
+    "error_code": null,
+    "error_code_known": "ERR-ILK-KEY",
+    "symptom": "SEMI S2-0703 유지보수 중 인터록 Defeat Key는 어떻게 통제하나?"
+  },
+  {
+    "id": "Q18",
+    "category": "안전 (제어)",
+    "equipment_name": "챔버 로컬 바이패스",
+    "error_code": null,
+    "error_code_known": "ERR-CTRL-STATE",
+    "symptom": "챔버 점검으로 로컬 바이패스 중 호스트 원격 시작을 어떻게 막나?"
+  },
+  {
+    "id": "Q19",
+    "category": "안전 (인간공학)",
+    "equipment_name": "SEMI S8 HMI 디스플레이",
+    "error_code": null,
+    "error_code_known": "ERR-HMI-REACH",
+    "symptom": "서서 보는 디스플레이와 조작 도달 한계는?"
+  },
+  {
+    "id": "Q20",
+    "category": "예지보전",
+    "equipment_name": "슬릿·헬륨·매처 통합 예지보전",
+    "error_code": null,
+    "error_code_known": "ERR-UPDM-FUSE",
+    "symptom": "슬릿·헬륨·매처가 각자 알람 한계 아래인데 공정을 미리 멈추는 조건은?"
+  },
+  {
+    "id": "Q21",
+    "category": "진공 (터보펌프)",
+    "equipment_name": "터보 분자 펌프",
+    "error_code": null,
+    "error_code_known": "ERR-TMP-VIB",
+    "symptom": "진동·기동 시간·온도 트립 기준은?"
+  },
+  {
+    "id": "Q22",
+    "category": "유틸 (냉각수)",
+    "equipment_name": "PCW 매니폴드",
+    "error_code": null,
+    "error_code_known": "ERR-PCW-FLOW",
+    "symptom": "PCW 유량·온도가 RF와 히터 출력을 제한하는 기준은?"
+  },
+  {
+    "id": "Q23",
+    "category": "진공 (게이지)",
+    "equipment_name": "가열형 바라트론",
+    "error_code": null,
+    "error_code_known": "ERR-CM-ZERO",
+    "symptom": "영점을 다시 잡는 조건과 게이지 교체 기준은?"
+  },
+  {
+    "id": "Q24",
+    "category": "진공 (압력제어)",
+    "equipment_name": "APC 스로틀",
+    "error_code": null,
+    "error_code_known": "ERR-APC-HUNT",
+    "symptom": "스로틀이 헌팅할 때 압력·개도 기준과 게인 조정 순서는?"
+  },
+  {
+    "id": "Q25",
+    "category": "식각 (EPD)",
+    "equipment_name": "OES 엔드포인트",
+    "error_code": null,
+    "error_code_known": "ERR-EPD-MISS",
+    "symptom": "엔드포인트가 안 나올 때 파장, 창 교체, 시간 백업 기준은?"
+  },
+  {
+    "id": "Q26",
+    "category": "진공 (로드락)",
+    "equipment_name": "300mm 로드락",
+    "error_code": null,
+    "error_code_known": "ERR-LL-SLOW",
+    "symptom": "펌프다운이 늦을 때 시간 규격과 점검 순서는?"
+  },
+  {
+    "id": "Q27",
+    "category": "증착 (CVD)",
+    "equipment_name": "AMAT Producer 샤워헤드",
+    "error_code": null,
+    "error_code_known": "ERR-SH-CLOG",
+    "symptom": "샤워헤드 막힘을 균일도와 차압으로 어떻게 나누나?"
+  },
+  {
+    "id": "Q28",
+    "category": "증착 (ALD)",
+    "equipment_name": "ALD 전구체 버블러",
+    "error_code": null,
+    "error_code_known": "ERR-BUBBLER",
+    "symptom": "버블러와 공급 라인의 온도 창은?"
+  },
+  {
+    "id": "Q29",
+    "category": "챔버 (디척)",
+    "equipment_name": "식각 ESC 디척",
+    "error_code": null,
+    "error_code_known": "ERR-DECHUCK",
+    "symptom": "공정 후 웨이퍼가 척에 붙을 때 디척 전압과 핀 상승 조건은?"
+  },
+  {
+    "id": "Q30",
+    "category": "이송 (리프트 핀)",
+    "equipment_name": "LAM 식각 챔버 리프트 핀",
+    "error_code": null,
+    "error_code_known": "ERR-LIFT-PIN",
+    "symptom": "리프트 핀 높이 편차와 블레이드 간격 한계는?"
+  }
+]

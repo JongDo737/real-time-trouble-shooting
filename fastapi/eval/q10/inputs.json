@@ -1,0 +1,82 @@
+[
+  {
+    "id": "N01",
+    "category": "없는 장비",
+    "equipment_name": "CNC-500",
+    "error_code": "E-1042",
+    "error_code_known": null,
+    "symptom": "스핀들에서 소음이 납니다"
+  },
+  {
+    "id": "N02",
+    "category": "없는 장비",
+    "equipment_name": "Haas VF-2",
+    "error_code": "SPINDLE-OVERLOAD",
+    "error_code_known": null,
+    "symptom": "주축 과부하 알람이 반복됩니다"
+  },
+  {
+    "id": "N03",
+    "category": "없는 장비",
+    "equipment_name": "Lam Research Kiyo",
+    "error_code": "ERR-KIYO-77",
+    "error_code_known": null,
+    "symptom": "척 온도가 설정값까지 안 올라갑니다"
+  },
+  {
+    "id": "N04",
+    "category": "없는 장비",
+    "equipment_name": "Applied Materials Endura PVD",
+    "error_code": "ERR-TARGET-ARC",
+    "error_code_known": null,
+    "symptom": "타깃에서 아킹이 발생하고 증착률이 떨어집니다"
+  },
+  {
+    "id": "N05",
+    "category": "없는 주제",
+    "equipment_name": "Brooks GF40",
+    "error_code": "AL40",
+    "error_code_known": null,
+    "symptom": "사내 식당 메뉴가 뭐예요?"
+  },
+  {
+    "id": "N06",
+    "category": "없는 주제",
+    "equipment_name": "Brooks GF40",
+    "error_code": "AL40",
+    "error_code_known": null,
+    "symptom": "오늘 서울 날씨 알려 주세요"
+  },
+  {
+    "id": "N07",
+    "category": "없는 주제",
+    "equipment_name": "AE Cesar 1312",
+    "error_code": "ALARM-402",
+    "error_code_known": null,
+    "symptom": "비밀번호를 잊어버렸는데 어떻게 바꾸나요?"
+  },
+  {
+    "id": "N08",
+    "category": "코드 틀림 (관련 사례)",
+    "equipment_name": "Brooks GF40",
+    "error_code": "AL99",
+    "error_code_known": null,
+    "symptom": "유량이 출렁거립니다"
+  },
+  {
+    "id": "N09",
+    "category": "코드 틀림 (관련 사례)",
+    "equipment_name": "AE Cesar 1312",
+    "error_code": "ALARM-999",
+    "error_code_known": null,
+    "symptom": "반사파가 12%까지 튑니다"
+  },
+  {
+    "id": "N10",
+    "category": "비슷한 코드 (관련 사례)",
+    "equipment_name": "Brooks GF40",
+    "error_code": "AL04",
+    "error_code_known": null,
+    "symptom": "유량 헌팅이 생깁니다"
+  }
+]

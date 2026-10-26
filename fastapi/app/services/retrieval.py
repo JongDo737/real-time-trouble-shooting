@@ -9,6 +9,7 @@ import numpy as np
 from rank_bm25 import BM25Okapi
 
 from app.errors import ApiError
+from app.services.risk import Risk, parse_risk
 from app.services.textproc import extract_code_keys, normalize_key, tokenize
 
 # 파이프라인이 청크 맨 앞에 붙이는 헤더: [장비명: X | 에러코드: Y | 섹션: Z | 위험도: W]
@@ -120,6 +121,22 @@ class RagIndex:
                 break
             following.append(nxt)
         return following
+
+    def risk_of(self, chunk_id: str, max_back: int = 4) -> Risk | None:
+        """이 청크가 속한 항목의 위험도. 위험도 줄은 항목 맨 앞부분에 있어서, 500자로 잘린 뒷부분 청크는
+        거슬러 올라가 항목의 머리 청크(섹션 제목이 있는 청크)에서 읽는다. 위험도가 적히지 않은 항목은 None."""
+        start = self.position[chunk_id]
+        source = self.chunks[start].metadata.get("source")
+        for back in range(max_back + 1):
+            index = start - back
+            if index < 0 or self.chunks[index].metadata.get("source") != source:
+                break
+            risk = parse_risk(self.chunks[index].text)
+            if risk is not None:
+                return risk
+            if self.chunks[index].metadata.get("section") != "General":
+                break  # 항목의 머리인데 위험도 줄이 없다 = 이 항목에는 위험도 표기가 없다
+        return None
 
     def sparse_search(self, tokens: list[str], k: int) -> list[str]:
         """BM25 점수가 높은 순서의 청크 ID. 질의 단어가 하나도 맞지 않은(0점 이하) 청크는 제외한다."""

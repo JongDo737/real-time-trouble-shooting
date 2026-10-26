@@ -56,6 +56,6 @@ public final class RagDtos {
 
     /** text = 근거 청크 본문 (→ translation_manual_refs.text) */
     @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-    public record RagSource(String doc, Integer page, String section, String text, Double score) {
+    public record RagSource(String doc, Integer page, String section, String text, Double score, String riskLevel) {
     }
 }
