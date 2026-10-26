@@ -83,7 +83,7 @@ export function createApiClient({
                 code: details?.code || 'UNKNOWN_ERROR',
                 requestId: details?.request_id || null,
             });
-            if (response.status === 401 && authenticated) onUnauthorized(error);
+            if (response.status === 401 && (authenticated || error.code === 'UNAUTHORIZED')) onUnauthorized(error);
             throw error;
         }
         return result;

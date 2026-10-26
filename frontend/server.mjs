@@ -11,6 +11,7 @@ const mime = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript
 const config = {
     API_BASE_URL: process.env.API_BASE_URL || '',
     WS_BASE_URL: process.env.WS_BASE_URL || '',
+    STT_URL: process.env.STT_URL || '',
     MOCK_ROLE: process.env.MOCK_ROLE || 'AGENT',
     ENABLE_UI_PREVIEW: process.env.ENABLE_UI_PREVIEW === 'true'
 };

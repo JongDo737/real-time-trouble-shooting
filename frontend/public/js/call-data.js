@@ -10,9 +10,11 @@ export function mapCall(call, previous = {}) {
         equipment: call.equipmentName,
         errorCode: call.errorCode,
         description: call.symptom ?? previous.description ?? '',
-        company: call.customer?.company_name ?? call.customer?.companyName ?? previous.company ?? '',
+        company: call.customer?.companyName ?? previous.company ?? '',
         // 이름이 없으면 로그인 아이디로 대신 표시하지 않습니다.
-        requester: call.customer?.client_name ?? previous.requester ?? '',
+        requester: call.customer?.clientName ?? previous.requester ?? '',
+        requesterAccount: call.customer?.username ?? previous.requesterAccount ?? '',
+        agentAccount: call.agent?.username ?? previous.agentAccount ?? '',
         position: call.customer?.position ?? previous.position ?? '',
         messages: call.messages ?? [],
     };
@@ -37,8 +39,8 @@ export function mapMessage(message, myRole) {
         roleLabel: myRole === 'ADMIN'
             ? (message.senderRole === 'ADMIN' ? '상담원' : '고객')
             : (message.senderRole === 'ADMIN' ? 'Support agent' : 'Customer'),
-        text: message.text,
+        text: message.text ?? (myRole === 'ADMIN' ? '(번역 실패)' : '(Translation failed)'),
         time: message.timestamp,
-        needsReview: message.needsReview === true,
+        needsReview: message.needsReview === true || message.text == null,
     };
 }

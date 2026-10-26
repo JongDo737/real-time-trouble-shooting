@@ -2,12 +2,21 @@ import { createSupportApi } from './support-api.js';
 import { createState, profiles } from './model.js';
 import { mapCall, mapMessage, getCallSummary } from './call-data.js';
 import { createCallChannel, loadStompClient } from './call-channel.js';
-import { validateCallInput, validateSignupInput, validateUtterance } from './validation.js';
+import { normalizeSignupInput, validateCallInput, validateSignupInput, validateUtterance } from './validation.js';
 import { utcNow } from './utc.js';
+import { createSpeechInput } from './speech-input.js';
+import { createRecordedSpeechInput, createTranscriber } from './recorded-speech.js';
 
 const activeCallKey = 'rilshu.activeCall';
 
-export function createSupportController({ config, isPreview, sessions, storage, onChange, loadClient = loadStompClient, apiFactory = createSupportApi }) {
+export function createSupportController({ config, isPreview, sessions, storage, onChange, loadClient = loadStompClient, apiFactory = createSupportApi,
+    Recognition = globalThis.SpeechRecognition || globalThis.webkitSpeechRecognition,
+    secureContext = globalThis.isSecureContext ?? true,
+    Recorder = globalThis.MediaRecorder,
+    getUserMedia = globalThis.navigator?.mediaDevices?.getUserMedia?.bind(globalThis.navigator.mediaDevices),
+    sttFetch = globalThis.fetch,
+    AudioContext = globalThis.AudioContext || globalThis.webkitAudioContext,
+}) {
     const state = {
         data: createState(),
         role: config.MOCK_ROLE,
@@ -37,7 +46,50 @@ export function createSupportController({ config, isPreview, sessions, storage, 
     let socketVersion = 0;
     let disposed = false;
     let actionRequest;
+    let microphoneMuted = false;
+    let microphoneSuspended = false;
+    let microphoneTimer;
     const notify = () => { if (!disposed) onChange?.(); };
+    const speechOptions = {
+        Recognition, secureContext,
+        onFinal: sendMessage,
+        onChange: value => {
+            state.speech = value; notify();
+            if (value.status === 'idle') {
+                clearTimeout(microphoneTimer);
+                microphoneTimer = setTimeout(syncMicrophone, 100);
+            }
+        },
+    };
+    const speech = config.STT_URL ? createRecordedSpeechInput({
+        ...speechOptions, Recorder, getUserMedia, AudioContext, continuous: true,
+        transcribe: createTranscriber({ endpoint: config.STT_URL, getAccessToken: () => sessions.read()?.accessToken, fetchImpl: sttFetch }),
+    }) : createSpeechInput(speechOptions);
+    state.speech = speech.state;
+
+    function syncMicrophone() {
+        if (disposed || isPreview || microphoneMuted || microphoneSuspended || state.busy
+            || state.view !== 'call' || state.data.connection !== 'connected'
+            || !state.speech.supported || !state.speech.secureContext || state.speech.status !== 'idle') return;
+        void speech.start(state.role === 'AGENT' ? 'ko-KR' : 'en-US');
+    }
+
+    function sendMessage(value) {
+        const message = typeof value === 'string' ? value.trim() : value;
+        if (disposed || isPreview || state.busy || state.view !== 'call' || state.data.connection !== 'connected' || !validateUtterance(message)) return false;
+        try {
+            channel.send(message);
+            state.data.translations.push({ id: `local-${++localMessageId}`, local: true,
+                speaker: text('나', 'Me'), roleLabel: state.role === 'AGENT' ? text('상담원', 'Support agent') : text('고객', 'Customer'),
+                text: message, time: utcNow(), needsReview: false,
+            });
+            notify();
+            return true;
+        } catch (error) {
+            errorNotice(error);
+            return false;
+        }
+    }
 
     async function stopChannel(previous) {
         try {
@@ -60,6 +112,22 @@ export function createSupportController({ config, isPreview, sessions, storage, 
             state.notice = '';
             notify();
             return;
+        }
+        if (state.view === 'signup' && error.code === 'DUPLICATE_USERNAME') {
+            state.errors.username = text('이미 사용 중인 아이디입니다.', 'This username is already in use.');
+            state.notice = '';
+            notify();
+            return;
+        }
+        if (error.code === 'VALIDATION_ERROR') {
+            const fields = state.view === 'signup' ? ['username', 'password', 'clientName', 'companyName', 'position']
+                : state.view === 'request' ? ['equipmentName', 'errorCode', 'symptom'] : [];
+            for (const field of fields) {
+                // 명세는 message 문자열만 보장합니다. 명시된 필드명만 입력란에 연결합니다.
+                if (new RegExp(`\\b${field}\\s*:`).test(error.message)) {
+                    state.errors[field] = text(error.message, 'Please check this field.');
+                }
+            }
         }
         const messages = {
             DUPLICATE_USERNAME: ['이미 사용 중인 아이디입니다.', 'This username is already in use.'],
@@ -97,17 +165,21 @@ export function createSupportController({ config, isPreview, sessions, storage, 
             if (!disposed && version === sessionVersion) {
                 errorNotice(error);
                 if (['ALREADY_ACCEPTED', 'INVALID_STATUS_TRANSITION'].includes(error.code)) await refreshList();
-                if (error.code === 'NOT_FOUND') state.view = 'dashboard';
+                if (error.code === 'NOT_FOUND' && state.view !== 'signup') state.view = 'dashboard';
             }
         } finally {
             if (!disposed && version === sessionVersion) {
                 state.busy = false;
                 notify();
+                syncMicrophone();
             }
         }
     }
 
     function clearCall() {
+        clearTimeout(microphoneTimer);
+        microphoneMuted = false;
+        speech.cancel();
         socketVersion += 1;
         clearTimeout(solutionTimer);
         solutionRequest?.abort();
@@ -192,23 +264,59 @@ export function createSupportController({ config, isPreview, sessions, storage, 
         }, 5000);
     }
 
+    async function restoreActiveCall(wait, signal) {
+        if (!session || disposed) return;
+        // 상세 응답에는 고객·증상이 없으므로 목록에서 원본 정보를 먼저 확보합니다.
+        let candidate;
+        const savedId = storage.getItem(activeCallKey);
+        let page = 0;
+        let totalPages;
+        do {
+            const result = await wait(api.getCalls({
+                status: state.role === 'AGENT' ? 'CALLING' : 'PENDING,CALLING', page, size: 100,
+            }, { signal }));
+            const mine = result.items.filter(call => ['PENDING', 'CALLING'].includes(call.status)
+                && (state.role !== 'AGENT' || call.agent?.id === session.user.id));
+            candidate = mine.find(call => call.callId === savedId) || mine[0];
+            totalPages = result.totalPages;
+            page += 1;
+        } while (!candidate && page < totalPages);
+        if (!candidate) {
+            storage.removeItem(activeCallKey);
+            return;
+        }
+        const detail = await wait(api.getCall(candidate.callId, { signal }));
+        if (!['PENDING', 'CALLING'].includes(detail.status)) {
+            storage.removeItem(activeCallKey);
+            return;
+        }
+        const Client = await wait(ensureClient());
+        state.data.selected = mapCall(detail, mapCall(candidate));
+        state.view = detail.status === 'PENDING' ? 'waiting' : 'call';
+        state.data.connection = 'connecting';
+        await subscribeCall(candidate.callId, Client);
+        if (state.role === 'AGENT') pollSolution(candidate.callId);
+    }
+
     async function refreshActiveCall(callId, version) {
         callRequest?.abort();
         callRequest = new AbortController();
-        const result = await api.getCall(callId, { signal: callRequest.signal });
-        if (version !== socketVersion || activeCallId !== callId) return;
+        const { signal } = callRequest;
+        const result = await api.getCall(callId, { signal });
+        if (signal.aborted || version !== socketVersion || activeCallId !== callId) return;
         state.data.selected = mapCall(result, state.data.selected || {});
         const history = (result.messages || []).map(message => mapMessage(message, session.user.role));
         const ids = new Set(history.map(message => message.id));
         state.data.translations = [...history, ...state.data.translations.filter(message => !message.local && !ids.has(message.id))];
         if (result.status === 'CALLING') {
-            state.data.connection = 'connected';
+            state.data.connection = channel?.connected ? 'connected' : 'reconnecting';
             state.view = 'call';
             state.notice = '';
         } else if (['MISSED', 'RESOLVED', 'UNRESOLVED'].includes(result.status)) {
             finishLocally(result.status);
         }
         notify();
+        syncMicrophone();
     }
 
     async function ensureClient() {
@@ -218,6 +326,7 @@ export function createSupportController({ config, isPreview, sessions, storage, 
     }
 
     async function subscribeCall(callId, Client) {
+        speech.cancel();
         const version = ++socketVersion;
         const previous = channel;
         channel = null;
@@ -235,11 +344,22 @@ export function createSupportController({ config, isPreview, sessions, storage, 
             },
             onDisconnect: () => {
                 if (version !== socketVersion) return;
+                callRequest?.abort();
+                speech.cancel();
                 state.data.connection = 'reconnecting';
                 state.notice = text('통화 채널 재연결 중입니다.', 'Reconnecting to the call.');
                 notify();
             },
-            onError: error => { if (version === socketVersion) errorNotice(error); },
+            onError: async error => {
+                if (version !== socketVersion) return;
+                speech.cancel();
+                state.data.connection = 'reconnecting';
+                notify();
+                // 종료된 통화는 재구독이 금지됩니다. 놓친 종료 이벤트를 REST로 확인합니다.
+                try { await refreshActiveCall(callId, version); }
+                catch { /* 상세 확인에 실패하면 원래 소켓 오류를 표시합니다. */ }
+                if (version === socketVersion && !channel?.connected) errorNotice(error);
+            },
             onMessage: message => {
                 if (version !== socketVersion) return;
                 if (message.type === 'translation') {
@@ -252,6 +372,7 @@ export function createSupportController({ config, isPreview, sessions, storage, 
                     state.view = 'call';
                     state.notice = '';
                     state.data.selected.status = 'CALLING';
+                    syncMicrophone();
                 } else if (message.type === 'ended' || message.type === 'missed') {
                     finishLocally(message.status || 'MISSED');
                 }
@@ -298,9 +419,9 @@ export function createSupportController({ config, isPreview, sessions, storage, 
             const sample = profiles[state.role];
             return {
                 ...sample,
-                name: session?.user.client_name || sample.name,
-                englishName: session?.user.client_name || sample.englishName,
-                company: session ? (session.user.company_name || session.user.companyName || '') : sample.company,
+                name: session ? (session.user.clientName || session.user.username || '') : sample.name,
+                englishName: session ? (session.user.clientName || session.user.username || '') : sample.englishName,
+                company: session ? (session.user.companyName || '') : sample.company,
                 position: session?.user.position || '',
             };
         },
@@ -318,18 +439,7 @@ export function createSupportController({ config, isPreview, sessions, storage, 
             notify();
             await refreshList();
             scheduleRefresh();
-            const restoredCall = storage.getItem(activeCallKey);
-            if (restoredCall) {
-                await action(async (wait, signal) => {
-                    const Client = await wait(ensureClient());
-                    state.data.selected = mapCall(await wait(api.getCall(restoredCall, { signal })), state.data.inquiries?.find(item => item.callId === restoredCall));
-                    if (['CALLING', 'PENDING'].includes(state.data.selected.status)) {
-                        state.view = state.data.selected.status === 'PENDING' ? 'waiting' : 'call';
-                        await subscribeCall(restoredCall, Client);
-                        if (state.role === 'AGENT') pollSolution(restoredCall);
-                    } else storage.removeItem(activeCallKey);
-                });
-            }
+            await action((wait, signal) => restoreActiveCall(wait, signal));
         },
         login(credentials) {
             if (!credentials.username?.trim() || !credentials.password) {
@@ -345,9 +455,11 @@ export function createSupportController({ config, isPreview, sessions, storage, 
                 state.authDraft = {};
                 await refreshList();
                 scheduleRefresh();
+                await restoreActiveCall(wait, signal);
             });
         },
         signup(input) {
+            input = normalizeSignupInput(input);
             state.signupDraft = { ...input, password: '' };
             state.errors = validateSignupInput(input);
             if (Object.keys(state.errors).length) {
@@ -425,6 +537,7 @@ export function createSupportController({ config, isPreview, sessions, storage, 
         },
         endCall(status) {
             if (state.role !== 'AGENT' || !['RESOLVED', 'UNRESOLVED'].includes(status)) return;
+            speech.cancel();
             return action(async (wait, signal) => {
                 const callId = state.data.selected.callId;
                 const updated = await wait(api.changeCallStatus(callId, status, { signal }));
@@ -432,23 +545,24 @@ export function createSupportController({ config, isPreview, sessions, storage, 
                 finishLocally(updated.status);
             });
         },
-        sendRecognizedText(value) {
-            if (isPreview || state.data.connection !== 'connected' || !validateUtterance(value)) return false;
-            try {
-                channel.send(value);
-                state.data.translations.push({ id: `local-${++localMessageId}`, local: true,
-                    speaker: text('나', 'Me'), roleLabel: text('상담원', 'Customer'),
-                    text: value, time: utcNow(), needsReview: false,
-                });
-                notify();
-                return true;
-            } catch (error) {
-                errorNotice(error);
-                return false;
-            }
+        toggleMicrophone() {
+            if (['starting', 'listening'].includes(state.speech.status)) { microphoneMuted = true; speech.stop(); return; }
+            if (disposed || isPreview || state.busy || state.view !== 'call' || state.data.connection !== 'connected') return;
+            microphoneMuted = false;
+            return speech.start(state.role === 'AGENT' ? 'ko-KR' : 'en-US');
+        },
+        stopMicrophone() {
+            microphoneSuspended = true;
+            speech.cancel();
+        },
+        resumeMicrophone() {
+            microphoneSuspended = false;
+            syncMicrophone();
         },
         dispose() {
             disposed = true;
+            clearTimeout(microphoneTimer);
+            speech.cancel();
             sessionVersion += 1;
             socketVersion += 1;
             listVersion += 1;
