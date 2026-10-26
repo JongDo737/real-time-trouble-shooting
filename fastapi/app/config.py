@@ -1,5 +1,6 @@
 from functools import lru_cache
 from pathlib import Path
+from typing import Literal
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -34,6 +35,23 @@ class Settings(BaseSettings):
     rag_max_retries: int = 1  # 재시도 1회 = 총 최대 2번 시도 (2로 올리면 3번째로 BM25 단독 시도가 추가됨)
     rag_deadline_seconds: float = 20  # 한 번의 /rag-query 전체 대기 시간 상한
 
+    # 청킹: 서버가 읽을 인덱스를 어느 방식으로 만든 것으로 할지
+    #   fixed    = 파이프라인이 500자 단위로 자른 인덱스 (FAISS_DIR)
+    #   semantic = scripts/build_semantic_index.py가 의미가 바뀌는 곳에서 자른 인덱스 (FAISS_SEMANTIC_DIR)
+    chunking: Literal["fixed", "semantic"] = "fixed"
+    faiss_semantic_dir: Path = Path("../rag_pipeline/faiss_db/pdf_semantic")
+    semantic_breakpoint_percentile: float = 90  # 인접 문장의 의미 거리가 이 백분위보다 크면 그 사이를 자른다
+    semantic_min_chars: int = 150  # 이보다 짧은 청크는 만들지 않는다
+    semantic_max_chars: int = 900  # 이보다 길면 강제로 자른다
+
+    # 평가 (scripts/run_eval.py): 쉼표로 여러 개 선택  keywords | embedding | judge
+    eval_methods: str = "keywords"  # 합격을 정하는 방법
+    eval_info_methods: str = ""  # 계산해서 보여 주기만 하고 합격에는 쓰지 않는 방법. 떨어지면 "확인 필요"로 표시 (예: judge)
+    eval_judge_model: str = "gpt-4o"  # 답변을 만드는 모델과 다른 모델로 채점해 자기 평가 편향을 줄인다
+    eval_embed_threshold: float = 0.5  # 답변과 기대 답변의 임베딩 유사도가 이 값 이상이면 통과 (Q01~Q10 실측: 맞는 답 19/20 통과, 다른 질문의 기대 답 16/180 오통과)
+    eval_judge_threshold: int = 4  # Judge 점수(1~5)가 이 값 이상이면 통과
+    eval_pass_rule: Literal["all", "any"] = "all"  # 선택한 내용 평가를 모두 통과해야(all) / 하나라도 통과하면(any) 합격
+
     glossary_file: Path = Path("data/glossary.json")
 
     @property
@@ -43,7 +61,7 @@ class Settings(BaseSettings):
 
     @property
     def faiss_path(self) -> Path:
-        path = self.faiss_dir
+        path = self.faiss_semantic_dir if self.chunking == "semantic" else self.faiss_dir
         return path if path.is_absolute() else (BASE_DIR / path).resolve()
 
 

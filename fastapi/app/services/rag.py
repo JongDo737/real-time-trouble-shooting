@@ -9,6 +9,7 @@ from openai import AsyncOpenAI
 from app.config import Settings
 from app.services.llm import chat, embed, require_model
 from app.services.retrieval import Chunk, RagIndex, chunk_code_keys, hybrid_search, pin_ids
+from app.services.risk import highest
 from app.services.textproc import normalize_key, query_tokens
 
 JUDGE_PROMPT = """You are a strict relevance judge for an industrial equipment troubleshooting search system.
@@ -77,6 +78,8 @@ class RagOutcome:
     needs_review: bool = False
     exact_match: bool | None = None  # found일 때: 같은 장비·오류코드 사례(True) / 관련 사례만(False)
     chunks: list[Chunk] = field(default_factory=list)  # 답변의 근거가 된 청크
+    risk_level: str | None = None  # 근거 문서의 위험도 중 가장 높은 것: INFO | WARNING | CRITICAL (문서에 표기가 없으면 None)
+    risk_reason: str | None = None  # 그 위험도 줄의 괄호 안 이유
 
 
 def _case_text(equipment_name: str, error_code: str | None, symptom: str | None) -> str:
@@ -239,6 +242,7 @@ async def _run(
         if not answer or answer.upper() == NOT_FOUND:
             continue  # 평가는 통과했지만 문서에 해결방법이 없다고 판단 → 다음 시도
 
+        risk = highest(index.risk_of(chunk.id) for chunk in evidence)
         return RagOutcome(
             status="found",
             attempts=number,
@@ -250,6 +254,8 @@ async def _run(
             needs_review=(not exact) or score < settings.rag_review_upper or bm25_only,
             exact_match=exact,
             chunks=evidence,
+            risk_level=risk.level if risk else None,
+            risk_reason=risk.reason if risk else None,
         )
 
     return _not_found(state, reason="low_score" if state.saw_hits else "no_hits")
