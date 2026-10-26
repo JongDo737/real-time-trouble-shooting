@@ -90,12 +90,35 @@ test('backend UUID and raw detail messages render with the viewer role', () => {
 
 test('stored RAG sources with no answer display a completed result', () => {
     const context = screenContext();
-    context.data.solution = { status: 'found', answer: null, sources: [{ doc: 'Manual', page: 7, section: null }], needsReview: true, handoff: true };
+    context.data.solution = {
+        status: 'found', answer: null, sources: [{ doc: 'Manual', page: 7, section: null }],
+        needsReview: true, handoff: true, riskLevel: 'CRITICAL', riskReason: '<b>내파</b>',
+    };
     const screen = createViews(context).callScreen();
     assert.ok(screen.includes('관련 매뉴얼을 찾았습니다.'));
     assert.ok(!screen.includes('관련 매뉴얼을 찾고 있습니다.'));
     assert.ok(screen.includes('Manual · p. 7'));
     assert.ok(screen.includes('해결방법을 찾지 못했습니다. 엔지니어 연결이 필요합니다.'));
+    assert.ok(screen.includes('class="risk-banner risk-critical"'));
+    assert.ok(screen.includes('위험도 위험 <span class="risk-level">CRITICAL</span>'));
+    assert.ok(screen.includes('인명 위험 또는 즉시 파손 가능'));
+    assert.ok(screen.includes('근거: &lt;b&gt;내파&lt;/b&gt;'));
+    assert.ok(!screen.includes('<b>내파</b>'));
+});
+
+test('risk banner colors follow the level and unknown levels are hidden', () => {
+    const render = riskLevel => {
+        const context = screenContext();
+        context.data.solution = { status: 'found', answer: '1. 점검', sources: [], riskLevel, riskReason: null };
+        return createViews(context).callScreen();
+    };
+    assert.ok(render('WARNING').includes('class="risk-banner risk-warning"'));
+    assert.ok(render('WARNING').includes('위험도 주의'));
+    assert.ok(render('INFO').includes('class="risk-banner risk-info"'));
+    assert.ok(render('INFO').includes('위험도 정보'));
+    assert.ok(!render('INFO').includes('근거:'));
+    assert.ok(!render('UNKNOWN').includes('risk-banner'));
+    assert.ok(!render(null).includes('risk-banner'));
 });
 
 test('external names and translations are escaped and timestamps use local time', () => {

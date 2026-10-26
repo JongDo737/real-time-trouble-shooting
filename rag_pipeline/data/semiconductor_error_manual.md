@@ -1,11 +1,13 @@
 # SEMICONDUCTOR EQUIPMENT ERROR CODE & SPECIFICATION MANUAL
 문서 번호: SOP-SEMI-SPEC-2026-V1
 적용 대상: 식각(Etch), 증착(CVD/ALD), 노광/이송(Track/WHR), 열처리(RTP) 전 공정
+위험도 등급은 각 항목의 위험도 줄을 따른다. 절차·참조, 공정 중단이나 수율·부품 손상, 인명 위험 또는 즉시 파손의 세 단계다.
 
 ---
 
 ## [SPEC-01] RF Power Generator & Auto Matcher Error Code
 - 문서 식별: MANUAL-RF-ETCH-01
+- 위험도: WARNING (반사파 증가로 매처·제너레이터 손상, 15% 초과 시 트립)
 - 관련 장비: 13.56 MHz RF Generator (AE Cesar 1312 / Seren MC2 Auto Matcher)
 - 에러 코드: `ALARM-402` (Reflected Power Limit Exceeded), `ERR-MATCH-TUNE`
 - 규격 임계치:
@@ -23,6 +25,7 @@
 
 ## [SPEC-02] ICP-RIE Plasma Chamber Ignition Standard
 - 문서 식별: MANUAL-ICP-IGN-02
+- 위험도: WARNING (알람 없이 점화 실패, 공정 중단)
 - 관련 장비: 고밀도 유도결합 플라즈마 식각기 (ICP-RIE System)
 - 관련 상태: `NO-ALARM-IGNITION-FAIL` (에러코드 없이 플라즈마 점화 불능)
 - 공정 물리 파라미터 기준:
@@ -36,6 +39,7 @@
 
 ## [SPEC-03] Mass Flow Controller (MFC) Flow & Pressure Specification
 - 문서 식별: MANUAL-GAS-MFC-03
+- 위험도: WARNING (유량 이탈. 독성·반응성 가스는 퍼지 전 라인 개방 금지)
 - 관련 장비: Brooks Instrument Series GF40 / Azbil 디지털 질량 유량 제어기
 - 에러 코드: `AL40` (Excessive Flow Rate - 유량 표시 범위 초과), `AL82` (Sensor Error 2)
 - 동작 및 조정 규격:
@@ -49,6 +53,7 @@
 
 ## [SPEC-04] SEMI S2 Safety Interlock Defeat & EMO Protocol
 - 문서 식별: MANUAL-SEMI-SAFE-04
+- 위험도: CRITICAL (인터록·EMO 오조작 시 인명 위험)
 - 적용 규격: SEMI S2-0818 Environmental, Health, and Safety Guideline
 - 안전 인터록 우회 규정 (Section 11.7):
   * 유지보수(PM) 모드에서 인터록 우회는 반드시 '도구(Tool)'를 사용하는 의도적 조작으로만 가능 (임의 점퍼선 금지)
@@ -62,6 +67,7 @@
 
 ## [SPEC-05] Electrostatic Chuck (ESC) & Powered Electrode Spec
 - 문서 식별: MANUAL-CHAMBER-ESC-05
+- 위험도: WARNING (헬륨 누설·바이어스 이탈로 웨이퍼와 전극 손상)
 - 관련 장비: 300mm ICP Etch Chamber ESC & Lower Powered Electrode
 - 에러 코드: `HE-LEAK-HIGH` (Backside Helium Leak-up-rate Limit Exceeded)
 - 공정 한계치:
@@ -74,6 +80,7 @@
 
 ## [SPEC-06] Wafer Handling Robot (WHR) Positioning & Homing Spec
 - 문서 식별: MANUAL-ROBOT-WHR-06
+- 위험도: WARNING (웨이퍼 이탈 시 파손·이송 정지)
 - 관련 장비: Logosol 4-Link SCARA Wafer Handling Robot / Brooks MagnaTran 7.1
 - 에러 코드: `ERR-WHR-OUT-OF-POCKET` (웨이퍼 안착 위치 이탈 에러)
 - 4대 광학 센서 엣지 판정 조건:
@@ -88,6 +95,7 @@
 
 ## [SPEC-07] Vacuum Slit Valve & Chamber Seal Parts Catalog
 - 문서 식별: MANUAL-VAC-VALVE-07
+- 위험도: WARNING (진공 누설, 서비스 모드에서 협착 위험)
 - 관련 장비: 300mm Transfer-to-Process Chamber Vacuum Isolation
 - 규격 절차: Section 7.5.1 Vacuum System Leak Check
 - 공인 정품 파트 넘버 (Part Numbers):
@@ -102,6 +110,7 @@
 
 ## [SPEC-08] Sub-Fab Fire Protection VESDA Isolation Standard
 - 문서 식별: MANUAL-UTIL-VESDA-08
+- 위험도: CRITICAL (화재 감지 격리 실패 시 오방출 또는 미감지)
 - 관련 장비: Xtralis VESDA LaserPLUS / VESDA VSC Aspirating Smoke Detector
 - SEMI 연동 규격: SEMI S2 Section 14.4.3 화재 감지 시 설비 전원/케미컬 인터록 강제 셧다운 연동
 - 정비 사전 격리(Isolation) 기준:
@@ -115,6 +124,7 @@
 
 ## [SPEC-09] SmartFDC Telemetry & SAP PM Work Order Spec
 - 문서 식별: MANUAL-AI-FDC-09
+- 위험도: INFO (조기 경보와 작업 지시 절차)
 - 관련 시스템: SECS/GEM 300 Telemetry Streaming & SAP PM / IBM Maximo EAM
 - 조기 경보 알고리즘 규격:
   * SECS/GEM 센서 데이터 기반 SPC 한계선 돌파 20 ~ 40분 전 조기 경보 발령
@@ -127,6 +137,7 @@
 
 ## [SPEC-10] RTP Temperature Controller & Power Board Spec
 - 문서 식별: MANUAL-RTP-THERMAL-10
+- 위험도: WARNING (전원 보드·통신 이상 시 램프 출력 불안정)
 - 관련 장비: AccuThermo AW410/AW610 Rapid Thermal Processing & Sekienko 2000F
 - 에러 코드: `ERR-PWR-SUPPLY-BOARD`, `TEMP-COMM-FAIL`
 - 전장 및 통신 안전 규격:
@@ -140,6 +151,7 @@
 
 ## [SPEC-11] SECS/GEM SmartFDC Multivariate Anomaly Spec
 - 문서 식별: MANUAL-FDC-MV-11
+- 위험도: INFO (한계치 도달 전 다변량 조기 경보)
 - 관련 시스템: SECS/GEM Host 수집 (SVID / ECID / ALID) & SmartFDC 다변량 이상 탐지
 - 에러 코드: `ERR-FDC-MV01` (Multivariate Trajectory Break — 단변량 UCL/LCL 이내, 변수 상관 붕괴)
 - 탐지 규격:
@@ -153,6 +165,7 @@
 
 ## [SPEC-12] RF Impedance Match, VSWR & Adaptive Sweep Spec
 - 문서 식별: MANUAL-RF-VSWR-12
+- 위험도: WARNING (임피던스 불일치가 지속되면 제너레이터 손상)
 - 관련 장비: Dry Etch / PECVD RF Generator & Auto Matcher (50 Ω 시스템)
 - 에러 코드: `ALARM-VSWR` (Reflected Power / VSWR Limit), `ERR-MUTUAL-CPL` (Multiple RF Mutual Coupling)
 - 정합 규격:
@@ -166,6 +179,7 @@
 
 ## [SPEC-13] RF Breakdown EVN Detection & Power Cut Spec
 - 문서 식별: MANUAL-RF-BD-13
+- 위험도: CRITICAL (방전·아크로 급전 부품 즉시 손상)
 - 관련 장비: 고진공·고출력 RF 경로 (식각/CVD 챔버, 급전 구간)
 - 에러 코드: `ERR-RFBD-EVN` (Multipactor / Corona, Error Vector Noise Trip)
 - 탐지 시퀀스:
@@ -181,6 +195,7 @@
 
 ## [SPEC-14] ICP Quartz Window Thickness Loss & OES Life Spec
 - 문서 식별: MANUAL-ICP-QZ-14
+- 위험도: CRITICAL (임계 두께 미만에서 윈도우 내파)
 - 관련 장비: ICP Etch 상단 쿼츠 윈도우(Quartz Window, SiO2) / 알루미나 세라믹 돔
 - 에러 코드: `ERR-QZ-LOSS` (Window Thickness Loss — Coupling Drift)
 - 마모·안전 규격:
@@ -194,6 +209,7 @@
 
 ## [SPEC-15] AMAT Centura Slit Valve Particle & Response Time Spec
 - 문서 식별: MANUAL-SLIT-PRT-15
+- 위험도: WARNING (개폐 지연과 파티클로 수율 저하)
 - 관련 장비: AMAT Centura 5200 Cluster Tool, Transfer-to-Process Slit Valve
 - 에러 코드: `ERR-SLIT-DELAY` (Open/Close Response Time Drift)
 - 동작 규격:
@@ -207,6 +223,7 @@
 
 ## [SPEC-16] ESC Helium Cooling Loss & Photoresist Burn Interlock
 - 문서 식별: MANUAL-ESC-PR-16
+- 위험도: WARNING (냉각 상실 시 감광액 탄화를 막기 위해 1초 내 Abort)
 - 관련 장비: Etch / PVD 정전척(ESC) 후면 헬륨 냉각 라인
 - 에러 코드: `ERR-PR-BURN` (Photoresist Burn Risk on Helium Cooling Loss)
 - 열 한계 규격:
@@ -220,6 +237,7 @@
 
 ## [SPEC-17] SEMI S2 Interlock Defeat Key & Auto-Restore Spec
 - 문서 식별: MANUAL-SEMI-DEFEAT-17
+- 위험도: CRITICAL (우회 키가 남으면 안전 차단이 풀린 채 운전)
 - 적용 규격: SEMI S2-0703 Section 11.7 (유지보수 중 인터록 우회)
 - 에러 코드: `ERR-ILK-KEY` (Defeat Key Not Restored / Unauthorized Bypass)
 - 우회 통제:
@@ -233,6 +251,7 @@
 
 ## [SPEC-18] STPA Maintenance Control-State Lock Spec
 - 문서 식별: MANUAL-STPA-CTRL-18
+- 위험도: CRITICAL (로컬 점검 중 원격 시작이 겹치면 고전압 인가)
 - 관련 시스템: 로컬 유지보수 패널 & SECS/GEM E30 Host 명령 경로
 - 에러 코드: `ERR-CTRL-STATE` (Local Bypass와 Remote Start 명령 충돌)
 - 통제 규격:
@@ -246,6 +265,7 @@
 
 ## [SPEC-19] SEMI S8 HMI Reach & Display Height Spec
 - 문서 식별: MANUAL-ERGONOMICS-S8-19
+- 위험도: INFO (조작부 배치 기준)
 - 적용 규격: SEMI S8 인간공학, EFEM·제어 콘솔 HMI
 - 에러 코드: `ERR-HMI-REACH` (Display or Control Outside Reach Envelope)
 - 배치 규격 (서 있는 자세):
@@ -260,6 +280,7 @@
 
 ## [SPEC-20] Unified Predictive Maintenance Fusion Architecture
 - 문서 식별: MANUAL-UPDM-ARCH-20
+- 위험도: INFO (융합 예지보전 구성 기준)
 - 관련 시스템: 엣지 DAQ, 도메인 SmartFDC, SEMI S2/S8 Safe-HMI
 - 에러 코드: `ERR-UPDM-FUSE` (Cross-Domain Misalignment Signature)
 - 융합 판정:
@@ -272,6 +293,7 @@
 
 ## [SPEC-21] Turbo Molecular Pump Bearing Vibration Spec
 - 문서 식별: MANUAL-VAC-TMP-21
+- 위험도: WARNING (진동·과온이 진행되면 로터 손상과 진공 상실)
 - 관련 장비: 프로세스 챔버 고진공 터보 분자 펌프 (Turbo Molecular Pump)
 - 에러 코드: `ERR-TMP-VIB` (Bearing Vibration Limit Exceeded)
 - 운전 규격:
@@ -286,6 +308,7 @@
 
 ## [SPEC-22] Process Cooling Water Flow & Temperature Spec
 - 문서 식별: MANUAL-UTIL-PCW-22
+- 위험도: WARNING (유량 부족 시 RF·히터 과열)
 - 관련 장비: RF 제너레이터, 터보 펌프, ESC 칠러 공통 PCW 매니폴드
 - 에러 코드: `ERR-PCW-FLOW` (Process Cooling Water Low Flow)
 - 공급 규격:
@@ -299,6 +322,7 @@
 
 ## [SPEC-23] Capacitance Manometer Zero Drift Spec
 - 문서 식별: MANUAL-VAC-CM-23
+- 위험도: WARNING (영점 이탈 시 압력 제어가 어긋남)
 - 관련 장비: 프로세스 챔버 가열형 정전용량 진공계 (100 mTorr / 1 Torr Baratron)
 - 에러 코드: `ERR-CM-ZERO` (Manometer Zero Drift)
 - 교정 규격:
@@ -312,6 +336,7 @@
 
 ## [SPEC-24] APC Throttle Valve Pressure Control Spec
 - 문서 식별: MANUAL-VAC-APC-24
+- 위험도: WARNING (압력 헌팅으로 공정 창 이탈)
 - 관련 장비: 챔버 압력 제어 자동 압력 조절 밸브 (APC Throttle Valve)
 - 에러 코드: `ERR-APC-HUNT` (Throttle Position Oscillation)
 - 제어 규격:
@@ -325,6 +350,7 @@
 
 ## [SPEC-25] OES Endpoint Detection Window Spec
 - 문서 식별: MANUAL-ETCH-EPD-25
+- 위험도: WARNING (엔드포인트 누락 시 과식각)
 - 관련 장비: 식각 챔버 광학 발광 분석기 (OES Endpoint Detector)
 - 에러 코드: `ERR-EPD-MISS` (Endpoint Wavelength Not Detected)
 - 판정 규격:
@@ -338,6 +364,7 @@
 
 ## [SPEC-26] Load Lock Pumpdown Time Spec
 - 문서 식별: MANUAL-VAC-LL-26
+- 위험도: WARNING (배기 지연·오버벤트 시 파티클과 웨이퍼 날림)
 - 관련 장비: 300mm 로드락, 러핑 펌프와 슬로우 펌핑 밸브
 - 에러 코드: `ERR-LL-SLOW` (Load Lock Pumpdown Timeout)
 - 배기 규격:
@@ -351,6 +378,7 @@
 
 ## [SPEC-27] CVD Showerhead Clogging & Uniformity Spec
 - 문서 식별: MANUAL-CVD-SH-27
+- 위험도: WARNING (홀 막힘으로 막 균일도 이탈)
 - 관련 장비: AMAT Producer CVD 샤워헤드 및 페이스 플레이트
 - 에러 코드: `ERR-SH-CLOG` (Showerhead Hole Restriction)
 - 증착 규격:
@@ -364,6 +392,7 @@
 
 ## [SPEC-28] ALD Precursor Bubbler Temperature Spec
 - 문서 식별: MANUAL-ALD-BUB-28
+- 위험도: WARNING (온도 이탈 시 도즈 불량·전구체 응축)
 - 관련 장비: ALD 전구체 버블러, 히팅 재킷, 캐리어 가스 라인
 - 에러 코드: `ERR-BUBBLER` (Precursor Temperature Out of Window)
 - 공급 규격:
@@ -377,6 +406,7 @@
 
 ## [SPEC-29] ESC Dechuck Voltage Decay Spec
 - 문서 식별: MANUAL-ESC-DECHUCK-29
+- 위험도: WARNING (잔류 전압 중 핀 상승 시 웨이퍼 파손)
 - 관련 장비: 식각 ESC 디척 전원 및 리프트 핀 인터록
 - 에러 코드: `ERR-DECHUCK` (Wafer Stick After Dechuck)
 - 해제 규격:
@@ -390,6 +420,7 @@
 
 ## [SPEC-30] Lift Pin Height & Wafer Clearance Spec
 - 문서 식별: MANUAL-CHAMBER-PIN-30
+- 위험도: WARNING (핀 높이 불일치로 긁힘·안착 충격)
 - 관련 장비: LAM 식각 챔버 리프트 핀 3점과 블레이드 진입 높이
 - 에러 코드: `ERR-LIFT-PIN` (Pin Height Mismatch)
 - 높이 규격:

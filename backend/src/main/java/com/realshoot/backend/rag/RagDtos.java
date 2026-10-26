@@ -48,10 +48,13 @@ public final class RagDtos {
                                   String symptom) {
     }
 
-    /** status: found | not_found (not_found도 HTTP 200 정상 응답) */
+    /**
+     * status: found | not_found (not_found도 HTTP 200 정상 응답).
+     * riskLevel: found일 때 근거 문서의 가장 높은 위험도 INFO | WARNING | CRITICAL (표기가 없으면 null)
+     */
     @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     public record RagQueryResponse(String status, String answer, Double score, List<RagSource> sources,
-                                   boolean needsReview, boolean handoff) {
+                                   boolean needsReview, boolean handoff, String riskLevel, String riskReason) {
     }
 
     /** text = 근거 청크 본문 (→ translation_manual_refs.text) */

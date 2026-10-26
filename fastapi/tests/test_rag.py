@@ -53,6 +53,30 @@ def test_sources_come_from_the_relevant_chunks_only(client, llm):
     assert "General" not in sections  # 섹션을 모르는 청크의 General은 표시하지 않는다
 
 
+def test_sources_carry_the_chunk_text_without_the_metadata_header(client, llm):
+    llm.completions.queue = [judge_json(4, relevant=[1]), ANSWER]
+    body = post(client).json()
+    assert body["sources"], "근거가 있어야 한다"
+    for source in body["sources"]:
+        assert source["text"]
+        assert not source["text"].startswith("[장비명:")  # 헤더는 본문이 아니다
+    head = next(s for s in body["sources"] if s["section"])
+    assert "레귤레이터를 2 psig 단위로 상향 조정" in head["text"]
+
+
+def test_sources_carry_the_judge_score(client, llm):
+    llm.completions.queue = [judge_json(4, relevant=[1]), ANSWER]
+    body = post(client).json()
+    assert body["score"] == 0.8
+    assert {s["score"] for s in body["sources"]} == {0.8}
+
+
+def test_not_found_has_no_sources(client, llm):
+    llm.completions.queue = [judge_json(1), REWRITTEN, judge_json(1)]
+    body = post(client).json()
+    assert body["status"] == "not_found" and body["sources"] == []
+
+
 def test_borderline_score_passes_but_needs_review(client, llm):
     llm.completions.queue = [judge_json(3), ANSWER]  # 3/5 = 0.6 = 합격선
     body = post(client).json()

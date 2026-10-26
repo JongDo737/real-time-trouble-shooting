@@ -371,11 +371,30 @@ export function createViews(context) {
         return `<section class="panel waiting-panel"><h2>Waiting for a support agent</h2><p>Your request has been submitted. Please keep this page open.</p><p class="help request-id">Request ID ${formatValue(data.selected?.callId)}</p></section>`;
     }
 
+    // 위험도 등급: 빨강(CRITICAL) · 노랑(WARNING) · 초록(INFO). 등급 아래에 의미와 근거 문서의 이유를 적는다.
+    const riskLevels = {
+        CRITICAL: { label: '위험', meaning: '인명 위험 또는 즉시 파손 가능. 작업 전 전원 차단 · EMO 등 안전 조치를 먼저 확인하세요.' },
+        WARNING: { label: '주의', meaning: '공정 중단, 수율 저하 또는 부품 손상 가능. 매뉴얼 절차와 임계치를 확인하세요.' },
+        INFO: { label: '정보', meaning: '일반 절차 · 참조 사항입니다.' },
+    };
+
+    function riskBanner(solution) {
+        const level = solution?.riskLevel;
+        const risk = riskLevels[level];
+        if (!risk) return '';
+        const reason = solution.riskReason ? `<p class="risk-reason">근거: ${escapeHTML(solution.riskReason)}</p>` : '';
+        return `<div class="risk-banner risk-${level.toLowerCase()}">
+            <p class="risk-title"><span class="risk-dot" aria-hidden="true"></span>위험도 ${risk.label} <span class="risk-level">${level}</span></p>
+            <p class="risk-meaning">${risk.meaning}</p>${reason}
+        </div>`;
+    }
+
     function solutionContent() {
         const solution = data.solution;
         const status = solution?.status || 'PENDING';
         const fallback = status === 'found' ? '관련 매뉴얼을 찾았습니다. 아래 출처를 확인해 주세요.' : status === 'not_found' ? '관련 매뉴얼을 찾지 못했습니다.' : status === 'error' ? '매뉴얼을 불러오지 못했습니다.' : '관련 매뉴얼을 찾고 있습니다.';
         return `<h2 id="rag-title">관련 매뉴얼</h2><p class="help">접수한 장비 · 오류 코드 · 이슈를 바탕으로 조회</p>
+            ${riskBanner(solution)}
             ${solution?.needsReview ? '<p class="review-marker">확인 필요</p>' : ''}
             <div class="rag-answer">${escapeHTML(solution?.answer || fallback)}</div>
             ${solution?.handoff ? '<p class="review-marker">해결방법을 찾지 못했습니다. 엔지니어 연결이 필요합니다.</p>' : ''}

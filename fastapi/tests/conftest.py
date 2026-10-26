@@ -73,8 +73,8 @@ class FakeEmbeddings:
         self.calls.append(kwargs)
         if self.error:
             raise self.error
-        vector = self.vector or keyword_vector(kwargs["input"])
-        return SimpleNamespace(data=[SimpleNamespace(embedding=vector)])
+        inputs = kwargs["input"] if isinstance(kwargs["input"], list) else [kwargs["input"]]
+        return SimpleNamespace(data=[SimpleNamespace(embedding=self.vector or keyword_vector(text)) for text in inputs])
 
 
 class FakeLLM:
@@ -109,7 +109,7 @@ def sample_chunks() -> list[Chunk]:
         Chunk(
             id="c-mfc-1",
             text="[장비명: COMMON | 에러코드: AL40 | 섹션: [CASE-03] 가스 박스 MFC 유량 출렁거림 | 위험도: INFO]\n"
-            "## [CASE-03] 가스 박스 MFC 유량 출렁거림 및 AL40 알람\n레귤레이터를 2 psig 단위로 상향 조정하자 유량 헌팅이 소멸했다.",
+            "## [CASE-03] 가스 박스 MFC 유량 출렁거림 및 AL40 알람\n- 위험도: WARNING (유량 이탈. 독성·반응성 가스는 퍼지 전 라인 개방 금지)\n레귤레이터를 2 psig 단위로 상향 조정하자 유량 헌팅이 소멸했다.",
             metadata={"source": log, "error_code": "AL40", "equipment": "COMMON", "section": "[CASE-03] MFC 유량 출렁거림"},
         ),
         Chunk(
@@ -121,7 +121,7 @@ def sample_chunks() -> list[Chunk]:
         Chunk(
             id="c-rf-1",
             text="[장비명: CENTURA | 에러코드: ALARM-402 | 섹션: [SPEC-01] RF Generator | 위험도: WARNING]\n"
-            "## [SPEC-01] RF Power Generator ALARM-402\n플라즈마 반사파가 10%를 넘으면 매처 가변 커패시터를 점검한다.",
+            "## [SPEC-01] RF Power Generator ALARM-402\n- 위험도: CRITICAL (방전·아크로 급전 부품 즉시 손상)\n플라즈마 반사파가 10%를 넘으면 매처 가변 커패시터를 점검한다.",
             metadata={"source": manual, "error_code": "ALARM-402", "equipment": "CENTURA", "section": "[SPEC-01] RF Generator", "risk_level": "WARNING"},
         ),
         Chunk(
