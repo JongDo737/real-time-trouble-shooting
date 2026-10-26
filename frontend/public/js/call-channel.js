@@ -2,6 +2,7 @@ import { validateUtterance } from './validation.js';
 
 export function createCallChannel({ Client, brokerURL, callId, getAccessToken, myRole, onMessage, onReady, onDisconnect, onError }) {
     let closed = false;
+    let ready = false;
     let subscription;
     const receivedIds = new Set();
     const client = new Client({
@@ -13,6 +14,7 @@ export function createCallChannel({ Client, brokerURL, callId, getAccessToken, m
         },
         onConnect: () => {
             if (closed) return;
+            ready = true;
             subscription?.unsubscribe();
             subscription = client.subscribe(`/topic/calls/${callId}`, frame => {
                 let message;
@@ -32,18 +34,20 @@ export function createCallChannel({ Client, brokerURL, callId, getAccessToken, m
             });
             onReady?.();
         },
-        onWebSocketClose: () => { if (!closed) onDisconnect?.(); },
-        onStompError: () => { if (!closed) onError?.(new Error('통화 채널에 연결하지 못했습니다.')); },
+        onWebSocketClose: () => { ready = false; if (!closed) onDisconnect?.(); },
+        onStompError: () => { ready = false; if (!closed) onError?.(new Error('통화 채널에 연결하지 못했습니다.')); },
     });
     return {
+        get connected() { return !closed && ready && client.connected; },
         start() { client.activate(); },
         send(text) {
             if (!validateUtterance(text)) throw new Error('발화는 1~2000자로 전달해 주세요.');
-            if (closed || !client.connected) throw new Error('통화 채널이 연결되지 않았습니다.');
+            if (closed || !ready || !client.connected) throw new Error('통화 채널이 연결되지 않았습니다.');
             client.publish({ destination: `/app/calls/${callId}/message`, body: JSON.stringify({ text }) });
         },
         stop() {
             closed = true;
+            ready = false;
             try {
                 if (client.connected) subscription?.unsubscribe();
             } catch {

@@ -63,6 +63,25 @@ public class User {
         return user;
     }
 
+    /** 기동 시 테스트 ADMIN 계정용. 회원가입 API는 signup()만 사용한다. */
+    public static User create(String username, String passwordHash, String clientName, String companyName,
+                              String position, Role role) {
+        User user = new User();
+        user.username = username;
+        user.passwordHash = passwordHash;
+        user.clientName = clientName;
+        user.companyName = companyName;
+        user.position = position;
+        user.role = role;
+        return user;
+    }
+
+    /** 이미 있는 admin 테스트 계정을 ADMIN · 지정 비밀번호로 맞춘다. */
+    public void applyTestAdmin(String passwordHash) {
+        this.passwordHash = passwordHash;
+        this.role = Role.ADMIN;
+    }
+
     @PrePersist
     void prePersist() {
         if (createdAt == null) {

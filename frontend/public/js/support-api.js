@@ -12,11 +12,11 @@ export function createSupportApi(options) {
     const request = createApiClient(options);
 
     return Object.freeze({
-        signup({ client_name, company_name, position, username, password }, { signal } = {}) {
+        signup({ clientName, companyName, position, username, password }, { signal } = {}) {
             return request('auth/signup', {
                 method: 'POST',
                 authenticated: false,
-                body: { client_name, company_name, position, username, password },
+                body: { clientName, companyName, position, username, password },
                 signal,
             });
         },
